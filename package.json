@@ -1,0 +1,10 @@
+{
+  "name": "formationsServer",
+  "description": "formations server side app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.4.3",
+    "express": "4.x"
+  }
+}

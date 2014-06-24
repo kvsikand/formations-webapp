@@ -1,0 +1,70 @@
+<!doctype html>
+<html ng-app="app">
+  <head>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="colorpicker/css/colorpicker.css" type="text/css" />
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="colorpicker/js/eye.js"></script>
+    <script src="colorpicker/js/colorpicker.js"></script>
+    <script src="colorpicker/js/utils.js"></script>
+    <script src="colorpicker/js/layout.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js"></script>
+    <script src="FormationsPanelController.js"></script>
+    <script src="PositionsPanelController.js"></script>
+    <script src="Position.js"></script>
+    <script src="CanvasState.js"></script>
+    <script src="ContentController.js"></script>
+    <script src="utilities.js"></script>
+    <script src="jui.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="sidebar" ng-controller="FormationsPanelController" ng-init="initFormations()">
+        <div id="formationsHeader" class="sidebarHeader">
+          <span class="sidebarTitle">Formations</span>
+        </div>
+        <div ng-repeat="form in getFormationList()" ng-class='getClass(form)' ng-style="getFormationStyle(form)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" class="entry">
+          <span ng-hide="form.editing">{{form.name}}</span>
+          <form ng-submit="doneEditing(form)" ng-show="form.editing">
+              <input ng-model="form.name" ng-blur="doneEditing(form)" ng-focus="form == editedItem">
+          </form>
+        </div> 
+        <div id='buttonContainer'>
+          <button id='addButton' ng-click='addFormation()'>   +   </button>
+        </div>
+      </div>
+      <div id="header"></div>
+      <div id="content" ng-controller="ContentController" ng-init="initContent()">
+        <canvas id="canvas" width="600" height="480" ng-mousedown="mouseDown($event)" ng-mouseUp="mouseUp($event)" ng-mousemove="mouseMove($event)" ng-dblclick="doubleClick($event)"> Canvases are not supported in your browser</canvas>
+        <br>
+        <div class="progressContainer">
+          <div ng-repeat="form in getFormationList()" jui:progressbar opt:value="getValue($index)" ng-style="getStyle($index)">
+          </div>
+        </div>
+        <br>
+        <button id='playButton' ng-hide="playing" ng-click="pressPlay()">Play</button>
+        <button id='playButton' ng-show="playing" ng-click="pressPause()">Pause</button>
+        <div id="importExportContainer">
+          <input id='import' type="file"></button>
+          <button id='export' ng-click="exportFormations()">Export</button>
+        </div>
+      </div>
+      <div id="rightSidebar" ng-controller="PositionsPanelController">
+        <div id="positionsHeader" class="sidebarHeader">
+          <span class="sidebarTitle">Positions</span> <br>
+          <span> (double click in canvas to create more) </span>
+        </div>
+        <div ng-repeat="pos in getPositionList()" class="posEntry" ng-style="getStyle($index)" ng-dblclick="startEditing(pos)" ng-click="tappedPosition($index)" colorpicker>
+          <span class="posLabel" ng-hide="pos.editing">{{pos.label}}</span>
+          <form class="posLabel" ng-submit="doneEditing(pos)" ng-show="pos.editing">
+              <input ng-model="pos.label" ng-blur="doneEditing(pos)" ng-focus="pos == editedItem" />
+          </form>
+        </div>
+      </div>
+      <div id="footer"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,108 @@
+.container { position:relative; padding:0 0 0 55px; }
+
+#sidebar {
+    position:absolute;
+    top: 30px; left:0;
+    width: 250px;
+}
+
+#rightSidebar {
+    position:absolute;
+    top: 30px; left:1000px;
+    width: 250px;
+}
+
+#header { 
+	position:absolute;
+	top:0; left:0;
+	width:1250px; height:30px; 
+	background: #9FA0A2;
+}
+
+#content { 
+	position:absolute;
+	top: 30px;  left: 250px;
+	width:750px; height:800px;
+	text-align: center;
+	background: #DEDFE2;
+}
+
+#playButton {
+  display: inline-block;
+}
+
+.formationEntry {
+	background: #DEDFE2;
+	width: 200px;
+}
+
+.transitionEntry {
+	background: #717173;
+	width: 200px;
+}
+
+#canvas {
+  background:#FFF;
+  display: inline-block;
+}
+
+.selected {
+	width:240px;
+}
+
+.progressContainer {
+	width: 600px;
+	height: 30px;
+	clear:both;
+  	display:inline-block;
+}
+
+.entry {
+	font-family: "Lucida Sans Unicode";
+  	padding-left: 10px;
+}
+
+.entry-enter {
+	-webkit-transition: 1s linear all; /* Chrome */
+	transition: 1s linear all;
+	opacity: 0;
+}
+ 
+.entry-enter.entry-enter-active {
+	opacity: 1;
+}
+
+.selected {
+  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.formationEntry {
+  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.posEntry {
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+	margin: 10px;
+    border-radius: 50%;
+	display: inline-block;
+	text-align: center;
+}
+
+.posLabel {
+	font-family: "Arial";
+	font-size: 18px;
+}
+
+.sidebarHeader {
+	background-color: #9FA0A2;
+	text-align: center;
+}
+
+.sidebarTitle {
+	font-family: "Arial";
+	font-size: 22px;
+}
