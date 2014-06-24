@@ -15,4 +15,4 @@ app.get('/export', function (req, res) {
   res.download(file,'formations.json');
 });
 
-app.listen(3000, function() { console.log('listening')});
+app.listen(process.env.PORT || 3000, function() { console.log('listening')});
