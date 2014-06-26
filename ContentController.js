@@ -46,7 +46,7 @@ app.service('CanvasService', function (FormationService) {
 });
 
 
-app.controller('ContentController',function($scope, $rootScope, $interval, $http, CanvasService, FormationService) {
+app.controller('ContentController',function($scope, $rootScope, $interval, CanvasService, FormationService) {
 	$scope.formationStartTime = null;
   $scope.playing = false;
   $scope.count = 0;
@@ -163,26 +163,6 @@ app.controller('ContentController',function($scope, $rootScope, $interval, $http
     if(FormationService.getSelectedFormation().type=='transition') {
       CanvasService.renderCanvas(FormationService.getSelectedFormation(),  $scope.count);
     }
-
-  };
-
-  $scope.importFormations = function() {
-
-  };
-
-  $scope.exportFormations = function() {
-    var jsonObj = {}
-    jsonObj.formationList = FormationService.formationList;
-    jsonObj.positionInfo = FormationService.positionInfo;
-    JSON.stringify(jsonObj);
-    $http.post('/export',jsonObj).success(function(data, status, headers) {
-       var element = angular.element('<a/>');
-       element.attr({
-           href: '/export',
-           target: '_blank',
-           download: 'formations.json'
-       })[0].click();
-    });
   };
 });
 

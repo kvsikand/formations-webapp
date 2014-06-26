@@ -12,8 +12,10 @@
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js"></script>
+    <script src="http://code.angularjs.org/1.0.3/angular-resource.min.js"></script>
     <script src="FormationsPanelController.js"></script>
     <script src="PositionsPanelController.js"></script>
+    <script src="uploader.js"></script>
     <script src="Position.js"></script>
     <script src="CanvasState.js"></script>
     <script src="ContentController.js"></script>
@@ -22,15 +24,18 @@
   </head>
   <body>
     <div class="container">
-      <div id="sidebar" ng-controller="FormationsPanelController" ng-init="initFormations()">
+      <div id="sidebar" ng-controller="FormationsPanelController" ng-init="initFormations()" ng-mouseup="stopDragging($event)" ng-mousemove="mouseMove($event)">
         <div id="formationsHeader" class="sidebarHeader">
           <span class="sidebarTitle">Formations</span>
         </div>
-        <div ng-repeat="form in getFormationList()" ng-class='getClass(form)' ng-style="getFormationStyle(form)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" class="entry">
+        <div ng-repeat="form in getFormationList()" ng-class='getClass(form)' ng-style="getFormationStyle($index)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" class="entry">
           <span ng-hide="form.editing">{{form.name}}</span>
+          <br>
+          <div ng-hide="form.editing" class='countDragger' ng-mousedown="startDragging($index,$event)">Counts: {{form.counts}}</div>
           <form ng-submit="doneEditing(form)" ng-show="form.editing">
               <input ng-model="form.name" ng-blur="doneEditing(form)" ng-focus="form == editedItem">
           </form>
+          <br>
         </div> 
         <div id='buttonContainer'>
           <button id='addButton' ng-click='addFormation()'>   +   </button>
@@ -47,8 +52,8 @@
         <br>
         <button id='playButton' ng-hide="playing" ng-click="pressPlay()">Play</button>
         <button id='playButton' ng-show="playing" ng-click="pressPause()">Pause</button>
-        <div id="importExportContainer">
-          <input id='import' type="file"></button>
+        <div id="importExportContainer" ng-controller="UploadController">
+          <input id='import' type="file" ng-file-select="importFormations($files)"></button>
           <button id='export' ng-click="exportFormations()">Export</button>
         </div>
       </div>

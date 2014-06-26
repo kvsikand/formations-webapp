@@ -1,4 +1,4 @@
-var app = angular.module('app', ['jui']);
+var app = angular.module('app', ['jui','ngResource']);
 
 app.service('FormationService', function () { 
 	this.formationList = [];
@@ -29,7 +29,9 @@ app.service('FormationService', function () {
 
 app.controller('FormationsPanelController', function($scope, $rootScope, CanvasService, FormationService) {
 	$scope.editedItem = null;
-
+	$scope.dragging = -1;
+	$scope.startY=0;
+	$scope.currY=0;
 	$rootScope.getFormationList = function () {
 		return FormationService.formationList;
 	}
@@ -63,11 +65,39 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
         $scope.editedItem = null;
     };
 
-    $scope.getFormationStyle = function(form) {
+    $scope.startDragging = function(index, event) {
+    	$scope.dragging = index;
+	    event.preventDefault();
+    	$scope.startY = event.pageY - event.offsetY;
+    	$scope.currY = event.pageY;
+    };
+
+    $scope.mouseMove = function(event) {
+    	if($scope.dragging != -1)
+    	{
+	    	$scope.currY = event.pageY;
+	    	FormationService.formationList[$scope.dragging].counts = Math.floor(($scope.currY-$scope.startY)/10);
+    	}
+
+    }
+
+    $scope.stopDragging = function (event) {
+    	$scope.dragging = -1;
+    	$scope.currY = 0;
+    	$scope.startY = 0;
+    };
+
+    $scope.getFormationStyle = function(index) {
+    	if(!($scope.dragging == index))	 {
+    		height = ((FormationService.formationList[index].counts * 10) + 40) +'px'
+    	} else {
+    		height = (40+($scope.currY-$scope.startY)) +'px'
+    	}
+
     	var style =  { 
     		margin: '0 20px',
-    		height : (form.counts * 10)+'px'};
-    	style['line-height']=style['height'];
+    		height : height};
+    	style['line-height']='40px';
     	return style;
     };
 
@@ -77,5 +107,5 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	if(form.type=="transition") cls += " transitionEntry";
     	if(form.selected) cls += " selected";
     	return cls;
-    }
+    };
 });
