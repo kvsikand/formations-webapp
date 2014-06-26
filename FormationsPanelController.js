@@ -29,9 +29,11 @@ app.service('FormationService', function () {
 
 app.controller('FormationsPanelController', function($scope, $rootScope, CanvasService, FormationService) {
 	$scope.editedItem = null;
+	$scope.mouseDown = false;
 	$scope.dragging = -1;
 	$scope.startY=0;
 	$scope.currY=0;
+
 	$rootScope.getFormationList = function () {
 		return FormationService.formationList;
 	}
@@ -65,18 +67,24 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
         $scope.editedItem = null;
     };
 
-    $scope.startDragging = function(index, event) {
-    	$scope.dragging = index;
+    $scope.startDragging = function (index, event) {
+    	$scope.mouseDown = true;
 	    event.preventDefault();
-    	$scope.startY = event.pageY - event.offsetY;
-    	$scope.currY = event.pageY;
-    };
+	    setTimeout(function () {
+	    	if($scope.mouseDown) {
+	    		$scope.dragging = index;
+		    	$scope.startY = event.pageY;
+		    	$scope.currY = event.pageY;
+		    	$scope.startCounts = FormationService.formationList[$scope.dragging].counts;
+	    	}
+	    },400);
+    }
 
     $scope.mouseMove = function(event) {
     	if($scope.dragging != -1)
     	{
 	    	$scope.currY = event.pageY;
-	    	FormationService.formationList[$scope.dragging].counts = Math.floor(($scope.currY-$scope.startY)/10);
+	    	FormationService.formationList[$scope.dragging].counts = $scope.startCounts + Math.floor(($scope.currY-$scope.startY)/20);
     	}
 
     }
@@ -85,13 +93,14 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	$scope.dragging = -1;
     	$scope.currY = 0;
     	$scope.startY = 0;
+    	$scope.mouseDown = false;
     };
 
     $scope.getFormationStyle = function(index) {
     	if(!($scope.dragging == index))	 {
-    		height = ((FormationService.formationList[index].counts * 10) + 40) +'px'
+    		height = ((FormationService.formationList[index].counts * 20) + 40) +'px';
     	} else {
-    		height = (40+($scope.currY-$scope.startY)) +'px'
+    		height = (40+($scope.currY-$scope.startY) + $scope.startCounts * 20) +'px';
     	}
 
     	var style =  { 

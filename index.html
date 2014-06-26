@@ -28,10 +28,10 @@
         <div id="formationsHeader" class="sidebarHeader">
           <span class="sidebarTitle">Formations</span>
         </div>
-        <div ng-repeat="form in getFormationList()" ng-class='getClass(form)' ng-style="getFormationStyle($index)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" class="entry">
+        <div ng-repeat="form in getFormationList()" ng-class='getClass(form)' ng-style="getFormationStyle($index)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" ng-mousedown="startDragging($index,$event)" class="entry">
           <span ng-hide="form.editing">{{form.name}}</span>
           <br>
-          <div ng-hide="form.editing" class='countDragger' ng-mousedown="startDragging($index,$event)">Counts: {{form.counts}}</div>
+          <div ng-hide="form.editing" class='countDragger'>Counts: {{form.counts}}</div>
           <form ng-submit="doneEditing(form)" ng-show="form.editing">
               <input ng-model="form.name" ng-blur="doneEditing(form)" ng-focus="form == editedItem">
           </form>
