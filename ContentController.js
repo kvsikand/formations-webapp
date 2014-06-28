@@ -1,5 +1,6 @@
 app.service('CanvasService', function (FormationService) { 
 	var instance = this;
+  this.markerList = [];
 	this.canvasState = null;
 
 	this.updateCanvas = function (index) {
@@ -19,6 +20,7 @@ app.service('CanvasService', function (FormationService) {
         instance.canvasState.markOrAddShapeWithPosition(pos, posInfo);
       }
     }
+
     instance.canvasState.removeUnmarkedShapes();
     instance.canvasState.valid = false;
     instance.canvasState.draw();
@@ -43,6 +45,11 @@ app.service('CanvasService', function (FormationService) {
     instance.canvasState.valid = false;
     instance.canvasState.draw();
   }
+
+  this.addMarker = function(loc) {
+    instance.markerList.push(loc);
+    instance.canvasState.addShape(new Marker(loc));
+  }
 });
 
 
@@ -50,6 +57,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 	$scope.formationStartTime = null;
   $scope.playing = false;
   $scope.count = 0;
+  $scope.showMouseDropdown = false;
 	$scope.initContent = function() {
 	  CanvasService.canvasState = new CanvasState(document.getElementById('canvas'));
 	};
@@ -60,6 +68,11 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 		CanvasService.canvasState.addShape(new Position(pos.x, pos.y, pos.posID, posInfo.color, posInfo.label));
 		FormationService.getSelectedFormation().positions.push(pos);
 	};
+
+  $scope.addPositionWithInfo = function(posInfo) {
+    var mouse = CanvasService.canvasState.getMouse(dropdownEvent);
+    CanvasService.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
+  }
 
 	$scope.mouseDown = function(event) {
 	    var mouse = CanvasService.canvasState.getMouse(event);
@@ -102,8 +115,9 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   $scope.mouseUp = function(e) {
     CanvasService.canvasState.dragging = false;
-    var index = CanvasService.canvasState.shapes.indexOf(CanvasService.canvasState.selection);
-    if(CanvasService.canvasState.selection) {
+    if(CanvasService.canvasState.selection && CanvasService.canvasState.selection.type==0) {
+      var pid =  CanvasService.canvasState.selection.posID;
+      var index = FormationService.positionIndexForID(FormationService.getSelectedFormation(),pid);
     	FormationService.getSelectedFormation().positions[index].x = CanvasService.canvasState.selection.x;
       FormationService.getSelectedFormation().positions[index].y = CanvasService.canvasState.selection.y;
     }
@@ -113,6 +127,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   $scope.doubleClick = function(e) {
     var mouse = CanvasService.canvasState.getMouse(e);
     $scope.addPosition(FormationService.createPosition(mouse));
+    $scope.closeDropdown();
   };
 
   $scope.pressPlay = function () {
@@ -164,6 +179,69 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       CanvasService.renderCanvas(FormationService.getSelectedFormation(),  $scope.count);
     }
   };
+
+  $scope.getBackgroundStyle = function() {
+    if(FormationService.getSelectedFormation())
+      if(FormationService.getSelectedFormation().type=='transition') {
+        return { background : '#717173' };
+      } else {
+        return { background : '#DEDFE2' };
+      }
+  };
+
+  $scope.showDropdown = function (event) {
+    event.preventDefault();
+    $scope.showMouseDropdown = true;
+    $scope.dropdownEvent = event;
+  };
+
+  $scope.closeDropdown = function () {
+    $scope.showMouseDropdown = false;
+    $scope.dropdownEvent = null;
+  };
+
+  $scope.shouldShowDropdown = function () {
+    return $scope.showMouseDropdown;
+  };
+  
+  $scope.mouseDropdownStyle = function () {
+    var pos = {x: -100, y:-100};
+    var width = 150;
+    if($scope.dropdownEvent) {
+      pos.x = $scope.dropdownEvent.offsetX + width/2;
+      pos.y = $scope.dropdownEvent.offsetY;
+    }
+    return { position : 'absolute',
+             top : pos.y + 'px',
+             left : pos.x + 'px',
+             width : width+'px',
+             background:'#FAFAFA'
+           };
+  };
+
+  $scope.addMarker = function () {
+    pos = {x:0, y:0};
+    if($scope.dropdownEvent) {
+      pos.x = $scope.dropdownEvent.offsetX;
+      pos.y = $scope.dropdownEvent.offsetY;
+    }
+    CanvasService.addMarker(pos);
+    $scope.closeDropdown();
+  };
+});
+
+
+
+app.directive('ngRightClick', function($parse) {
+    return function(scope, element, attrs) {
+        var fn = $parse(attrs.ngRightClick);
+        element.bind('contextmenu', function(event) {
+            scope.$apply(function() {
+                event.preventDefault();
+                fn(scope, {$event:event});
+            });
+        });
+    };
 });
 
 function getRandomInt(min, max) {

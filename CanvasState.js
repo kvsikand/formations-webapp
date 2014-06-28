@@ -23,6 +23,7 @@ var CanvasState = function(canvas) {
   
   this.valid = false; // when set to false, the canvas will redraw everything
   this.shapes = [];  // the collection of things to be drawn
+
   this.dragging = false; // Keep track of when we are dragging
   // the current selected object. In the future we could turn this into an array for multiple selection
   this.selection = null;
@@ -49,8 +50,8 @@ var CanvasState = function(canvas) {
   setInterval(function() { myState.draw(); }, myState.interval);
 
   this.addShape = function(shape) {
-	this.shapes.push(shape);
-	this.valid = false;
+  	this.shapes.push(shape);
+  	this.valid = false;
   };
 
   this.clear = function() {
@@ -66,7 +67,7 @@ var CanvasState = function(canvas) {
   this.removeUnmarkedShapes = function () {
   	var unmarked = [];
    	for (var i = this.shapes.length-1; i >= 0; i--) {
-   		if(!this.shapes[i].marked) {
+   		if(!this.shapes[i].marked && !this.shapes[i].isStatic) {
 		   this.shapes.splice(i,1);
       	}
    	}

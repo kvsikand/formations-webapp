@@ -1,11 +1,13 @@
 var Position = function (x, y, pid, col, lbl) {
 	var RADIUS = 20;
+    var POSITION_TYPE = 0;
 	this.x = x || 0;
   	this.y = y || 0;
   	this.posID = pid || 0;
   	this.color = col || '#E55';
   	this.label = lbl || ''+this.posID;
   	this.marked = true;
+  	this.type = POSITION_TYPE;
 	// Draws this shape to a given context
 	this.draw = function(ctx) {
       ctx.beginPath();

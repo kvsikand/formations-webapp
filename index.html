@@ -2,21 +2,22 @@
 <html ng-app="app">
   <head>
     <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="colorpicker/css/colorpicker.css" type="text/css" />
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js"></script>
+    <script src="http://code.angularjs.org/1.0.3/angular-resource.min.js"></script>
     <script src="colorpicker/js/eye.js"></script>
     <script src="colorpicker/js/colorpicker.js"></script>
     <script src="colorpicker/js/utils.js"></script>
     <script src="colorpicker/js/layout.js"></script>
-    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js"></script>
-    <script src="http://code.angularjs.org/1.0.3/angular-resource.min.js"></script>
     <script src="FormationsPanelController.js"></script>
     <script src="PositionsPanelController.js"></script>
     <script src="uploader.js"></script>
     <script src="Position.js"></script>
+    <script src="Marker.js"></script>
     <script src="CanvasState.js"></script>
     <script src="ContentController.js"></script>
     <script src="utilities.js"></script>
@@ -42,8 +43,8 @@
         </div>
       </div>
       <div id="header"></div>
-      <div id="content" ng-controller="ContentController" ng-init="initContent()">
-        <canvas id="canvas" width="600" height="480" ng-mousedown="mouseDown($event)" ng-mouseUp="mouseUp($event)" ng-mousemove="mouseMove($event)" ng-dblclick="doubleClick($event)"> Canvases are not supported in your browser</canvas>
+      <div id="content" ng-controller="ContentController" ng-init="initContent()" ng-style="getBackgroundStyle()">
+        <canvas id="canvas" width="600" height="480" ng-mousedown="mouseDown($event)" ng-mouseUp="mouseUp($event)" ng-mousemove="mouseMove($event)" ng-dblclick="doubleClick($event)" ng-right-click="showDropdown($event)" ng-click="closeDropdown()"> Canvases are not supported in your browser</canvas>
         <br>
         <div class="progressContainer">
           <div ng-repeat="form in getFormationList()" jui:progressbar opt:value="getValue($index)" ng-style="getStyle($index)">
@@ -56,6 +57,7 @@
           <input id='import' type="file" ng-file-select="importFormations($files)"></button>
           <button id='export' ng-click="exportFormations()">Export</button>
         </div>
+        <div ng-include src="'mouseDropdown.tpl.html'"></div>
       </div>
       <div id="rightSidebar" ng-controller="PositionsPanelController">
         <div id="positionsHeader" class="sidebarHeader">
@@ -70,6 +72,6 @@
         </div>
       </div>
       <div id="footer"></div>
-    </div>
+    </div> 
   </body>
 </html>

@@ -25,7 +25,6 @@
 	top: 30px;  left: 250px;
 	width:750px; height:800px;
 	text-align: center;
-	background: #DEDFE2;
 }
 
 #playButton {
@@ -61,6 +60,7 @@
 .entry {
 	font-family: "Lucida Sans Unicode";
   	padding-left: 10px;
+	border-radius:2em;
 }
 
 .entry-enter {
@@ -113,4 +113,30 @@
 	height:40px;
 	position: relative;
 	bottom: 0px;
+}
+
+.dropdownList { 
+	list-style-type:none;
+	margin: 0; padding: 0;
+}
+
+.dropdownEntry {
+	width: 150px;
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;;
+}
+
+.timelineTag {
+	background-color: #ABABAB;
+	width:120px;
+	height: 43px;
+	
+}
+
+.backgroundimg {
+	position: absolute;
+	width:120px;
+	height: 43px;
+	z-index: 99;
 }
