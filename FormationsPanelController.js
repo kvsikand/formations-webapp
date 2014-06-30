@@ -38,13 +38,14 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 		return FormationService.formationList;
 	}
 
-	$scope.addFormation = function() {
+	$rootScope.addFormation = function() {
 		var pos = [];
 		if(FormationService.formationList.length > 0) {
 			pos = PositionsFromPositions(FormationService.formationList[FormationService.formationList.length-1].positions);
 			FormationService.formationList.push({name: 'transition ' + (FormationService.formationList.length+1), counts:4, type: 'transition'});
 		}
 		FormationService.formationList.push({name: 'formation ' + (FormationService.formationList.length+1), positions:pos, counts:4, type: 'formation'});
+		
 		$rootScope.selectFormation(FormationService.formationList.length-1);
 		
 	};
@@ -84,7 +85,7 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	if($scope.dragging != -1)
     	{
 	    	$scope.currY = event.pageY;
-	    	FormationService.formationList[$scope.dragging].counts = $scope.startCounts + Math.floor(($scope.currY-$scope.startY)/20);
+	    	FormationService.formationList[$scope.dragging].counts = Math.max(1,$scope.startCounts + Math.floor(($scope.currY-$scope.startY)/20));
     	}
 
     }
@@ -106,7 +107,7 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	var style =  { 
     		margin: '0 20px',
     		height : height};
-    	style['line-height']='40px';
+    	style['line-height']='24px';
     	return style;
     };
 

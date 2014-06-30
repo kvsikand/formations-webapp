@@ -31,11 +31,11 @@
         </div>
         <div ng-repeat="form in getFormationList()" ng-class='getClass(form)' ng-style="getFormationStyle($index)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" ng-mousedown="startDragging($index,$event)" class="entry">
           <span ng-hide="form.editing">{{form.name}}</span>
-          <br>
-          <div ng-hide="form.editing" class='countDragger'>Counts: {{form.counts}}</div>
           <form ng-submit="doneEditing(form)" ng-show="form.editing">
               <input ng-model="form.name" ng-blur="doneEditing(form)" ng-focus="form == editedItem">
           </form>
+          <br>
+          <div ng-hide="form.editing" class='countDragger'>Counts: {{form.counts}}</div>
           <br>
         </div> 
         <div id='buttonContainer'>
@@ -47,7 +47,7 @@
         <canvas id="canvas" width="600" height="480" ng-mousedown="mouseDown($event)" ng-mouseUp="mouseUp($event)" ng-mousemove="mouseMove($event)" ng-dblclick="doubleClick($event)" ng-right-click="showDropdown($event)" ng-click="closeDropdown()"> Canvases are not supported in your browser</canvas>
         <br>
         <div class="progressContainer">
-          <div ng-repeat="form in getFormationList()" jui:progressbar opt:value="getValue($index)" ng-style="getStyle($index)">
+          <div ng-repeat="form in getFormationList()" jui:progressbar opt:value="getValue($index)" ng-style="getStyle($index)" ng-click="clickedTimeline($index)">
           </div>
         </div>
         <br>

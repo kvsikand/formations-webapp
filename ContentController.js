@@ -60,6 +60,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   $scope.showMouseDropdown = false;
 	$scope.initContent = function() {
 	  CanvasService.canvasState = new CanvasState(document.getElementById('canvas'));
+    $rootScope.addFormation();
 	};
 
 
@@ -227,6 +228,10 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     }
     CanvasService.addMarker(pos);
     $scope.closeDropdown();
+  };
+
+  $scope.clickedTimeline = function(index) {
+    $rootScope.selectFormation(index);
   };
 });
 

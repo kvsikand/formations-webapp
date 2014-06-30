@@ -60,6 +60,7 @@
 .entry {
 	font-family: "Lucida Sans Unicode";
   	padding-left: 10px;
+  	padding-top: 10px;
 	border-radius:2em;
 }
 
