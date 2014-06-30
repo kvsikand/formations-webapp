@@ -3,7 +3,7 @@
   <head>
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="colorpicker/css/colorpicker.css" type="text/css" />
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js"></script>
@@ -64,7 +64,7 @@
           <span class="sidebarTitle">Positions</span> <br>
           <span> (double click in canvas to create more) </span>
         </div>
-        <div ng-repeat="pos in getPositionList()" class="posEntry" ng-style="getStyle($index)" ng-dblclick="startEditing(pos)" ng-click="tappedPosition($index)" colorpicker>
+        <div ng-repeat="pos in getPositionList()" class="posEntry" ng-style="getStyle($index)" ng-dblclick="startEditing(pos)" ng-click="tappedPosition($index, $event)" ng-right-click="addExistingPosition($index, $event)" colorpicker>
           <span class="posLabel" ng-hide="pos.editing">{{pos.label}}</span>
           <form class="posLabel" ng-submit="doneEditing(pos)" ng-show="pos.editing">
               <input ng-model="pos.label" ng-blur="doneEditing(pos)" ng-focus="pos == editedItem" />

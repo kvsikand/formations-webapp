@@ -49,7 +49,15 @@ app.service('CanvasService', function (FormationService) {
   this.addMarker = function(loc) {
     instance.markerList.push(loc);
     instance.canvasState.addShape(new Marker(loc));
-  }
+  };
+
+  this.addPositionWithInfo = function(posInfo, mouseEvent) {
+    var mouse = mouseEvent == null ? { x : 0, y : 0} : instance.canvasState.getMouse(mouseEvent);
+    if(FormationService.positionIndexForID(FormationService.getSelectedFormation(),posInfo.posID) == -1) {
+      instance.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
+      FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(mouse,posInfo.posID));
+    }
+  };
 });
 
 
@@ -70,12 +78,8 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 		FormationService.getSelectedFormation().positions.push(pos);
 	};
 
-  $scope.addPositionWithInfo = function(posInfo) {
-    var mouse = CanvasService.canvasState.getMouse(dropdownEvent);
-    CanvasService.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
-  }
-
 	$scope.mouseDown = function(event) {
+      event.preventDefault();
 	    var mouse = CanvasService.canvasState.getMouse(event);
 	    var mx = mouse.x;
 	    var my = mouse.y;
@@ -108,7 +112,19 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       // We don't want to drag the object by its top-left corner, we want to drag it
       // from where we clicked. Thats why we saved the offset and use it here
       CanvasService.canvasState.selection.x = mouse.x - CanvasService.canvasState.dragoffx;
-      CanvasService.canvasState.selection.y = mouse.y - CanvasService.canvasState.dragoffy;   
+      CanvasService.canvasState.selection.y = mouse.y - CanvasService.canvasState.dragoffy;
+
+      var form = FormationService.getSelectedFormation();
+      if(e.shiftKey && form.type == 'formation') {
+        //expensive for now
+        for(var i = 0; i < form.positions.length; i++) {
+          if(Math.abs(CanvasService.canvasState.selection.x - form.positions[i].x) < 15)
+            CanvasService.canvasState.selection.x = form.positions[i].x;
+          if(Math.abs(CanvasService.canvasState.selection.y - form.positions[i].y) < 15)
+            CanvasService.canvasState.selection.y = form.positions[i].y;
+        }
+      }
+
       CanvasService.canvasState.valid = false; // Something's dragging so we must redraw
     }
   };
@@ -118,9 +134,13 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     CanvasService.canvasState.dragging = false;
     if(CanvasService.canvasState.selection && CanvasService.canvasState.selection.type==0) {
       var pid =  CanvasService.canvasState.selection.posID;
-      var index = FormationService.positionIndexForID(FormationService.getSelectedFormation(),pid);
-    	FormationService.getSelectedFormation().positions[index].x = CanvasService.canvasState.selection.x;
-      FormationService.getSelectedFormation().positions[index].y = CanvasService.canvasState.selection.y;
+      if (FormationService.getSelectedFormation().type=='formation'){
+        var index = FormationService.positionIndexForID(FormationService.getSelectedFormation(),pid);
+        FormationService.getSelectedFormation().positions[index].x = CanvasService.canvasState.selection.x;
+        FormationService.getSelectedFormation().positions[index].y = CanvasService.canvasState.selection.y;
+      } else {
+        alert("can't change formations within a transition. Create a new formation");
+      }
     }
   };
 

@@ -18,6 +18,10 @@ app.service('FormationService', function () {
 		return pos;
 	}
 
+	this.getPositionWithID = function(mouse, posID) { 
+		return {x: mouse.x, y:mouse.y, posID: posID};
+	}
+
 	this.positionIndexForID = function(formation, posID) {
 		for(var i = 0; i < formation.positions.length; i++) {
 			if(formation.positions[i].posID == posID)
@@ -85,7 +89,7 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	if($scope.dragging != -1)
     	{
 	    	$scope.currY = event.pageY;
-	    	FormationService.formationList[$scope.dragging].counts = Math.max(1,$scope.startCounts + Math.floor(($scope.currY-$scope.startY)/20));
+	    	FormationService.formationList[$scope.dragging].counts = Math.max(0,$scope.startCounts + Math.floor(($scope.currY-$scope.startY)/20));
     	}
 
     }
@@ -99,9 +103,9 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 
     $scope.getFormationStyle = function(index) {
     	if(!($scope.dragging == index))	 {
-    		height = ((FormationService.formationList[index].counts * 20) + 40) +'px';
+    		height = ((FormationService.formationList[index].counts * 20) + 50) +'px';
     	} else {
-    		height = (40+($scope.currY-$scope.startY) + $scope.startCounts * 20) +'px';
+    		height = (50+($scope.currY-$scope.startY) + $scope.startCounts * 20) +'px';
     	}
 
     	var style =  { 

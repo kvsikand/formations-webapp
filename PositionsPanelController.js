@@ -30,12 +30,18 @@ app.controller('PositionsPanelController', function($scope, $rootScope, CanvasSe
         CanvasService.updateCanvas(FormationService.selectedIndex);
     };
 
-    $scope.tappedPosition = function(index) {
+    $scope.tappedPosition = function(index, event) {
     	if($scope.selectingColor != index)
 	    	$scope.selectingColor = index;
 	    else
 	    	$scope.selectingColor = -1;
-    }
+    	event.preventDefault();
+    };
+
+    $scope.addExistingPosition = function(index, event) {
+    	CanvasService.addPositionWithInfo(FormationService.positionInfo[index]);
+		event.preventDefault();
+    };
 });
 
 
