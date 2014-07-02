@@ -272,3 +272,20 @@ app.directive('ngRightClick', function($parse) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+$(function() {
+     $( "#play" ).button({
+      text: false,
+      icons: {
+        primary: "ui-icon-play"
+      }
+    });
+    $( "#pause" ).button({
+      text: false,
+      icons: {
+        primary: "ui-icon-pause"
+      }
+    });
+    $( "button" )
+      .button();
+})
