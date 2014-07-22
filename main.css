@@ -45,6 +45,12 @@
   margin-top: -5px;
 }
 
+#import {
+	border: dashed 3px #CBCBCB;
+	text-align: center;
+	padding: 20px;
+}
+
 .formationEntry {
 	background: #DEDFE2;
 	width: 200px;

@@ -30,20 +30,12 @@ var CanvasState = function(canvas) {
   this.dragoffx = 0; // See mousedown and mousemove events for explanation
   this.dragoffy = 0;
   
-  // **** Then events! ****
-  
-  // This is an example of a closure!
-  // Right here "this" means the CanvasState. But we are making events on the Canvas itself,
-  // and when the events are fired on the canvas the variable "this" is going to mean the canvas!
-  // Since we still want to use this particular CanvasState in the events we have to save a reference to it.
-  // This is our reference!
+
   var myState = this;
   
   //fixes a problem where double clicking causes text to get selected on the canvas
   canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
-  
-  // **** Options! ****
-  
+     
   this.selectionColor = '#CC0000';
   this.selectionWidth = 2;  
   this.interval = 30;
@@ -55,13 +47,13 @@ var CanvasState = function(canvas) {
   };
 
   this.clear = function() {
-	this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   this.unmarkAllShapes = function () {
    	for (var i =0; i < this.shapes.length; i++) {
    		this.shapes[i].marked = false;
-	}
+	  }
   }
 
   this.removeUnmarkedShapes = function () {

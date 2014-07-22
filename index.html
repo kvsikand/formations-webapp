@@ -55,7 +55,7 @@
         <button id='play' class="ui-corner-bottom" ng-hide="playing" ng-click="pressPlay()"></button>
         <button id='pause' ng-show="playing" ng-click="pressPause()"></button>
         <div id="importExportContainer" ng-controller="UploadController">
-          <input id='import' type="file" ng-file-select="importFormations($files)"></button>
+          <input id='import' type="file" ng-file-select="importFormations($files)"></input>
           <button id='export' ng-click="exportFormations()">Export</button>
         </div>
         <div ng-include src="'mouseDropdown.tpl.html'"></div>
@@ -68,7 +68,7 @@
         <div ng-repeat="pos in getPositionList()" class="posEntry" ng-style="getStyle($index)" ng-dblclick="startEditing(pos)" ng-click="tappedPosition($index, $event)" ng-right-click="addExistingPosition($index, $event)" colorpicker>
           <span class="posLabel" ng-hide="pos.editing">{{pos.label}}</span>
           <form class="posLabel" ng-submit="doneEditing(pos)" ng-show="pos.editing">
-              <input ng-model="pos.label" ng-blur="doneEditing(pos)" ng-focus="pos == editedItem" />
+              <input ng-model="pos.label" ng-blur="doneEditing(pos)" ng-focus="pos == editedItem" style="width:35px;"/>
           </form>
         </div>
       </div>

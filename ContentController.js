@@ -52,10 +52,14 @@ app.service('CanvasService', function (FormationService) {
   };
 
   this.addPositionWithInfo = function(posInfo, mouseEvent) {
-    var mouse = mouseEvent == null ? { x : 0, y : 0} : instance.canvasState.getMouse(mouseEvent);
+    var mouse = mouseEvent == null ? { x : 600/2, y : 280/2  } : instance.canvasState.getMouse(mouseEvent);
     if(FormationService.positionIndexForID(FormationService.getSelectedFormation(),posInfo.posID) == -1) {
-      instance.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
-      FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(mouse,posInfo.posID));
+      if(FormationService.getSelectedFormation.type=='formation') {
+        instance.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
+        FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(mouse,posInfo.posID));
+      } else {
+        FormationService.createIntermediateFormation({'action':'add','args':[posInfo, mouseEvent]});
+      }
     }
   };
 });
@@ -139,7 +143,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
         FormationService.getSelectedFormation().positions[index].x = CanvasService.canvasState.selection.x;
         FormationService.getSelectedFormation().positions[index].y = CanvasService.canvasState.selection.y;
       } else {
-        alert("can't change formations within a transition. Create a new formation");
+        FormationService.createIntermediateFormation({'action':'move','args':[pid,CanvasService.canvasState.selection.x,CanvasService.canvasState.selection.y]});
       }
     }
   };
@@ -203,18 +207,33 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   $scope.getBackgroundStyle = function() {
     if(FormationService.getSelectedFormation())
-      if(FormationService.getSelectedFormation().type=='transition') {
-        return { background : '#717173' };
-      } else {
+      // if(FormationService.getSelectedFormation().type=='transition') {
+      //   return { background : '#717173' };
+      // } else {
         return { background : '#DEDFE2' };
-      }
+      // }
   };
 
   $scope.showDropdown = function (event) {
     event.preventDefault();
     $scope.showMouseDropdown = true;
     $scope.dropdownEvent = event;
+    $scope.dropdownTarget = $scope.getDropdownTarget($scope.dropdownEvent);
   };
+
+  $scope.getDropdownTarget = function(event) {
+      var shapes = CanvasService.canvasState.shapes;
+      var l = shapes.length;
+      for (var i = l-1; i >= 0; i--) {
+        var mouse = CanvasService.canvasState.getMouse(event);
+        var mx = mouse.x;
+        var my = mouse.y;   
+        if (shapes[i].contains(mx, my)) {
+          return shapes[i].posID;
+        }
+      }
+      return null;
+  }
 
   $scope.closeDropdown = function () {
     $scope.showMouseDropdown = false;
@@ -252,6 +271,18 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   $scope.clickedTimeline = function(index) {
     $rootScope.selectFormation(index);
+  };
+
+  $scope.removePosition = function (index) {
+    var idx = FormationService.positionIndexForID(FormationService.getSelectedFormation(), 
+                                                                    $scope.dropdownTarget);
+    if(FormationService.getSelectedFormation().type=='formation') {
+      FormationService.getSelectedFormation().positions.splice(idx,1);
+    } else {
+      FormationService.createIntermediateFormation({'action':'remove', 'args' : [idx]});
+    }
+    CanvasService.updateCanvas(FormationService.selectedIndex);
+    $scope.closeDropdown(); 
   };
 });
 

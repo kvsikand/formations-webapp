@@ -29,6 +29,12 @@ app.service('FormationService', function () {
 		}
 		return -1;
 	}
+
+	this.createIntermediateFormation = function(obj) {
+		if(obj.action == 'add') {
+			
+		}
+	}
 });
 
 app.controller('FormationsPanelController', function($scope, $rootScope, CanvasService, FormationService) {
