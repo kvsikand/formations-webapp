@@ -34,7 +34,7 @@ app.service('CanvasService', function (FormationService) {
     //just linear interpolation for now.
     for(var i = 0; i < prev.positions.length; i++) {
       var pos1 = prev.positions[i];
-      var shape = instance.canvasState.shapes[i];
+      var shape = instance.canvasState.shapeWithID(pos1.posID);
       var id2 = FormationService.positionIndexForID(next,pos1.posID);
       if(id2 != -1) {
         var pos2 = next.positions[id2];
@@ -54,7 +54,7 @@ app.service('CanvasService', function (FormationService) {
   this.addPositionWithInfo = function(posInfo, mouseEvent) {
     var mouse = mouseEvent == null ? { x : 600/2, y : 280/2  } : instance.canvasState.getMouse(mouseEvent);
     if(FormationService.positionIndexForID(FormationService.getSelectedFormation(),posInfo.posID) == -1) {
-      if(FormationService.getSelectedFormation.type=='formation') {
+      if(FormationService.getSelectedFormation().type=='formation') {
         instance.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
         FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(mouse,posInfo.posID));
       } else {

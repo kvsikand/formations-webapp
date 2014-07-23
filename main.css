@@ -53,12 +53,20 @@
 
 .formationEntry {
 	background: #DEDFE2;
-	width: 200px;
+	width: 180px;
 }
 
 .transitionEntry {
 	background: #717173;
-	width: 200px;
+	width: 180px;
+}
+
+#addIntermediate {
+	width:40px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
 }
 
 #canvas {
@@ -84,6 +92,13 @@
 	border-radius:2em;
 }
 
+.editName {
+	font-family: "Lucida Sans Unicode";
+	font-size: 16px;
+	background-color: transparent;
+	border: none;
+}
+
 .entry-enter {
 	-webkit-transition: 1s linear all; /* Chrome */
 	transition: 1s linear all;
@@ -102,6 +117,13 @@
 .formationEntry {
   -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
   transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
 }
 
 .posEntry {

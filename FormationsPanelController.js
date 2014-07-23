@@ -30,10 +30,31 @@ app.service('FormationService', function () {
 		return -1;
 	}
 
-	this.createIntermediateFormation = function(obj) {
+	this.createIntermediateFormation = function(obj) {		
+		var newForm;
+		var trans = {name: 'transition ' + (this.selectedIndex+1), counts:this.getSelectedFormation().counts/2, type: 'transition'};
+		if(this.getSelectedFormation().type=='formation') {
+			newForm = JSON.parse(JSON.stringify(this.getSelectedFormation()));
+			this.formationList.splice(this.selectedIndex+1,0,trans,newForm);
+		} else {
+			this.getSelectedFormation().counts = this.getSelectedFormation().counts/2;
+			newForm = JSON.parse(JSON.stringify(this.formationList[this.selectedIndex-1]));
+			this.formationList.splice(this.selectedIndex+1,0,newForm,trans);
+		}
+		newForm.counts = 0;
+		if(this.getSelectedFormation())
+			this.getSelectedFormation().selected = false;
+		this.selectedIndex = this.formationList.indexOf(newForm);
+		this.getSelectedFormation().selected = true;
+
 		if(obj.action == 'add') {
 			
+		} else if (obj.action == 'move') {
+			var idx = this.positionIndexForID(this.getSelectedFormation(), obj.args[0]);
+			this.getSelectedFormation().positions[idx].x = obj.args[1];
+			this.getSelectedFormation().positions[idx].y = obj.args[2];
 		}
+
 	}
 });
 
@@ -128,4 +149,27 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	if(form.selected) cls += " selected";
     	return cls;
     };
+
+    $scope.canAddIntermediate = function () {
+    	return FormationService.selectedIndex < $scope.getFormationList().length-1;
+    }
+
+    $scope.intermediateAddStyle = function () {
+    	var y = 23;
+    	for(var i = 0; i <= FormationService.selectedIndex; i++) {
+    		y += 10;
+    		y += parseInt($scope.getFormationStyle(i).height.substring(0,$scope.getFormationStyle(i).height.length-2));
+    	}
+    	y += 'px';
+    	var style = {
+    		position: 'absolute',
+    		right: '-5px',
+    		top: y
+    	};
+    	return style;
+    }
+
+    $scope.addIntermediate  = function() {
+    	FormationService.createIntermediateFormation({ action:'none' });
+    }
 });

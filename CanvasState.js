@@ -56,12 +56,20 @@ var CanvasState = function(canvas) {
 	  }
   }
 
+  this.shapeWithID = function(pid) {
+    for(var i = 0; i < this.shapes.length; i++) {
+      var shape = this.shapes[i];
+      if(shape.posID == pid)
+        return shape;
+    }
+  }
+
   this.removeUnmarkedShapes = function () {
   	var unmarked = [];
    	for (var i = this.shapes.length-1; i >= 0; i--) {
    		if(!this.shapes[i].marked && !this.shapes[i].isStatic) {
 		   this.shapes.splice(i,1);
-      	}
+      }
    	}
   }
 
