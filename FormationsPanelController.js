@@ -2,7 +2,7 @@ var app = angular.module('app', ['jui','ngResource']);
 
 app.service('FormationService', function () { 
 	this.formationList = [];
-	this.positionInfo =[];
+	this.positionInfo = {};
 	this.timelineTags = [];
 	this.selectedIndex = -1;
 	this._positionCounter = 0;
@@ -13,21 +13,13 @@ app.service('FormationService', function () {
 	this.createPosition = function(mouse) {
 		var randColor = 'rgba(' + getRandomInt(0,255) + ',' + getRandomInt(0,255) + ',' + getRandomInt(0,255) + ',.6)';
 		var pos = {x: mouse.x, y: mouse.y, posID: this._positionCounter};
-		this.positionInfo.push({color: randColor, label: this._positionCounter, posID:this._positionCounter});
+		this.positionInfo[this._positionCounter] = {color: randColor, label: this._positionCounter};
 		this._positionCounter++;
 		return pos;
 	}
 
 	this.getPositionWithID = function(mouse, posID) { 
 		return {x: mouse.x, y:mouse.y, posID: posID};
-	}
-
-	this.positionIndexForID = function(formation, posID) {
-		for(var i = 0; i < formation.positions.length; i++) {
-			if(formation.positions[i].posID == posID)
-				return i;
-		}
-		return -1;
 	}
 
 	this.createIntermediateFormation = function(obj) {		
@@ -50,11 +42,21 @@ app.service('FormationService', function () {
 		if(obj.action == 'add') {
 			
 		} else if (obj.action == 'move') {
-			var idx = this.positionIndexForID(this.getSelectedFormation(), obj.args[0]);
+			var idx = positionIndexForID(this.getSelectedFormation(), obj.args[0]);
 			this.getSelectedFormation().positions[idx].x = obj.args[1];
 			this.getSelectedFormation().positions[idx].y = obj.args[2];
 		}
 
+	}
+
+	this.deleteFormation = function(index) {
+		var selected = this.getSelectedFormation();
+		var count = 2;
+		if(index == this.formationList.length-1) {
+			index = index - 1;
+		}
+		this.formationList.splice(index,count);
+		this.selectedIndex = this.formationList.indexOf(selected);
 	}
 });
 
@@ -116,7 +118,7 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	if($scope.dragging != -1)
     	{
 	    	$scope.currY = event.pageY;
-	    	FormationService.formationList[$scope.dragging].counts = Math.max(0,$scope.startCounts + Math.floor(($scope.currY-$scope.startY)/20));
+	    	FormationService.formationList[$scope.dragging].counts = Math.max(0,$scope.startCounts + Math.floor(($scope.currY-$scope.startY)/10));
     	}
 
     }
@@ -130,9 +132,9 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 
     $scope.getFormationStyle = function(index) {
     	if(!($scope.dragging == index))	 {
-    		height = ((FormationService.formationList[index].counts * 20) + 50) +'px';
+    		height = ((FormationService.formationList[index].counts * 10) + 50) +'px';
     	} else {
-    		height = (50+($scope.currY-$scope.startY) + $scope.startCounts * 20) +'px';
+    		height = (50+($scope.currY-$scope.startY) + $scope.startCounts * 10) +'px';
     	}
 
     	var style =  { 
@@ -171,5 +173,10 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 
     $scope.addIntermediate  = function() {
     	FormationService.createIntermediateFormation({ action:'none' });
+    }
+
+    $scope.deleteFormation = function(index) {
+    	console.log('deleting formation ' + index);
+    	FormationService.deleteFormation(index);
     }
 });

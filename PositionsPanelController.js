@@ -3,7 +3,9 @@ app.controller('PositionsPanelController', function($scope, $rootScope, CanvasSe
 	$scope.selectingColor = -1;
 
 	$rootScope.getPositionList = function () {
-		return FormationService.positionInfo;
+		return Object.keys(FormationService.positionInfo).map(function(key){
+		    return FormationService.positionInfo[key];
+		});
 	};
 
 	$scope.getStyle = function(index) {
@@ -19,13 +21,7 @@ app.controller('PositionsPanelController', function($scope, $rootScope, CanvasSe
         
     $scope.doneEditing = function(item){
         item.editing=false;
-        for(var i = 0; i < FormationService.positionInfo.length; i++)
-        {
-        	if(FormationService.positionInfo[i].posID == item.posID)
-        	{
-        		FormationService.positionInfo[i].label = item.label;
-        	}
-        }
+		FormationService.positionInfo[item.posID].label = item.label;
         $scope.editedItem = null;
         CanvasService.updateCanvas(FormationService.selectedIndex);
     };

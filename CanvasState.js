@@ -1,9 +1,9 @@
-var CanvasState = function(canvas) {
+var CanvasState = function(canvas, sharedCanvas) {
   // **** First some setup! ****
   this.canvas = canvas;
   this.width = canvas.width;
   this.height = canvas.height;
-  this.ctx = canvas.getContext('2d');
+  this.sharedCanvas = sharedCanvas;
   // This complicates things a little but but fixes mouse co-ordinate problems
   // when there's a border or padding. See getMouse for more detail
   var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
@@ -45,10 +45,6 @@ var CanvasState = function(canvas) {
   	this.shapes.push(shape);
   	this.valid = false;
   };
-
-  this.clear = function() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-  }
 
   this.unmarkAllShapes = function () {
    	for (var i =0; i < this.shapes.length; i++) {
@@ -93,39 +89,12 @@ var CanvasState = function(canvas) {
     }
   }
 
-  this.draw = function() {
-	  // if our state is invalid, redraw and validate!
-	  if (!this.valid) {
-	    var ctx = this.ctx;
-	    var shapes = this.shapes;
-	    this.clear();
-	    
-	    // ** Add stuff you want drawn in the background all the time here **
-	    
-	    // draw all shapes
-	    var l = shapes.length;
-	    for (var i = 0; i < l; i++) {
-	      var shape = shapes[i];
-	      // We can skip the drawing of elements that have moved off the screen:
-	      if (shape.x > this.width || shape.y > this.height ||
-	          shape.x + shape.w < 0 || shape.y + shape.h < 0) continue;
-	      shapes[i].draw(ctx);
-	    }
-	    
-	    // draw selection
-	    // right now this is just a stroke along the edge of the selected Shape
-	    if (this.selection != null) {
-	      ctx.strokeStyle = this.selectionColor;
-	      ctx.lineWidth = this.selectionWidth;
-	      var mySel = this.selection;
-	      ctx.strokeRect(mySel.x,mySel.y,mySel.w,mySel.h);
-	    }
-	    
-	    // ** Add stuff you want drawn on top all the time here **
-	    
-	    this.valid = true;
-	  }
-	}
+  this.draw = function (count) {
+      if (!this.valid) {
+        this.sharedCanvas.draw(this.shapes, count);
+        this.valid = true;
+      }
+  }
 
 	// Creates an object with x and y defined, set to the mouse position relative to the state's canvas
 	// If you wanna be super-correct this can be tricky, we have to worry about padding and borders

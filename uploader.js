@@ -9,7 +9,7 @@ app.directive("ngFileSelect",function(){
   }
 });
 
-app.controller('UploadController', function($scope, $http, FormationService, CanvasService, fileReader) {
+app.controller('UploadController', function($scope, $rootScope, $http, FormationService, CanvasService, fileReader) {
   $scope.getFile = function () {
     $scope.progress = 0;
     fileReader.readAsText($scope.file, $scope).then(function(result) {
@@ -24,7 +24,8 @@ app.controller('UploadController', function($scope, $http, FormationService, Can
   $scope.importFormations = function(file) {
     FormationService.formationList = file.formationList;
     FormationService.positionInfo = file.positionInfo;
-    CanvasService.updateCanvas(FormationService.formationList.length-1);
+    FormationService._positionCounter = file.positionInfo.length;
+    $rootScope.selectFormation(FormationService.formationList.length-1);
   };
 
   $scope.exportFormations = function() {
@@ -38,6 +39,21 @@ app.controller('UploadController', function($scope, $http, FormationService, Can
            href: '/export',
            target: '_blank',
            download: 'formations.json'
+       })[0].click();
+    });
+  };
+
+  $scope.downloadVideo = function() {
+    var jsonObj = {}
+    jsonObj.formationList = FormationService.formationList;
+    jsonObj.positionInfo = FormationService.positionInfo;
+    JSON.stringify(jsonObj);
+    $http.post('/exportVideo',jsonObj).success(function(data, status, headers) {
+       var element = angular.element('<a/>');
+       element.attr({
+           href: '/exportVideo',
+           target: '_blank',
+           download: 'formations.mp4'
        })[0].click();
     });
   };

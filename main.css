@@ -4,7 +4,8 @@
     position:absolute;
     top: 30px; left:0;
     width: 250px;
-    height: 100%;
+    height:720px;
+     overflow:auto;
 }
 
 #rightSidebar {
@@ -23,7 +24,7 @@
 #content { 
 	position:absolute;
 	top: 30px;  left: 250px;
-	width:750px; height:800px;
+	width:750px; height:720px;
 	text-align: center;
 }
 
@@ -54,11 +55,18 @@
 .formationEntry {
 	background: #DEDFE2;
 	width: 180px;
+	display: inline-block;
 }
 
 .transitionEntry {
 	background: #717173;
 	width: 180px;
+}
+
+.removeButton {
+	display: inline-block;
+	height: 10%;
+	top: 50px;
 }
 
 #addIntermediate {

@@ -2,6 +2,7 @@ app.service('CanvasService', function (FormationService) {
 	var instance = this;
   this.markerList = [];
 	this.canvasState = null;
+  this.sharedCanvas = null;
 
 	this.updateCanvas = function (index) {
     var formation = FormationService.formationList[index];
@@ -26,24 +27,10 @@ app.service('CanvasService', function (FormationService) {
     instance.canvasState.draw();
 	};
 
-  this.renderCanvas = function (formation, count) {
+  this.renderCanvas = function (count) {
     var index = FormationService.selectedIndex;
-    var prev = FormationService.formationList[index-1];
-    var next = FormationService.formationList[index+1];
-
-    //just linear interpolation for now.
-    for(var i = 0; i < prev.positions.length; i++) {
-      var pos1 = prev.positions[i];
-      var shape = instance.canvasState.shapeWithID(pos1.posID);
-      var id2 = FormationService.positionIndexForID(next,pos1.posID);
-      if(id2 != -1) {
-        var pos2 = next.positions[id2];
-        shape.x = pos1.x + ((pos2.x - pos1.x) / formation.counts * count);
-        shape.y = pos1.y + ((pos2.y - pos1.y) / formation.counts * count);
-      }
-    }
+    instance.canvasState.shapes = this.sharedCanvas.updateShapesWithCount(index, FormationService.formationList, count, instance.canvasState.shapes);
     instance.canvasState.valid = false;
-    instance.canvasState.draw();
   }
 
   this.addMarker = function(loc) {
@@ -53,7 +40,7 @@ app.service('CanvasService', function (FormationService) {
 
   this.addPositionWithInfo = function(posInfo, mouseEvent) {
     var mouse = mouseEvent == null ? { x : 600/2, y : 280/2  } : instance.canvasState.getMouse(mouseEvent);
-    if(FormationService.positionIndexForID(FormationService.getSelectedFormation(),posInfo.posID) == -1) {
+    if(positionIndexForID(FormationService.getSelectedFormation(),posInfo.posID) == -1) {
       if(FormationService.getSelectedFormation().type=='formation') {
         instance.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
         FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(mouse,posInfo.posID));
@@ -71,7 +58,9 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   $scope.count = 0;
   $scope.showMouseDropdown = false;
 	$scope.initContent = function() {
-	  CanvasService.canvasState = new CanvasState(document.getElementById('canvas'));
+    var canvas = document.getElementById('canvas');
+    CanvasService.sharedCanvas = new SharedCanvas(canvas.getContext('2d'), canvas.width, canvas.height)
+	  CanvasService.canvasState = new CanvasState(canvas, CanvasService.sharedCanvas);
     $rootScope.addFormation();
 	};
 
@@ -139,7 +128,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     if(CanvasService.canvasState.selection && CanvasService.canvasState.selection.type==0) {
       var pid =  CanvasService.canvasState.selection.posID;
       if (FormationService.getSelectedFormation().type=='formation'){
-        var index = FormationService.positionIndexForID(FormationService.getSelectedFormation(),pid);
+        var index = positionIndexForID(FormationService.getSelectedFormation(),pid);
         FormationService.getSelectedFormation().positions[index].x = CanvasService.canvasState.selection.x;
         FormationService.getSelectedFormation().positions[index].y = CanvasService.canvasState.selection.y;
       } else {
@@ -158,6 +147,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   $scope.pressPlay = function () {
     $scope.playing = true;
     $scope.formationStartTime = new Date();
+    $scope.lastCount=0;
     $scope.playingTimer = $interval($scope.updateCanvasFrame,30);
   };
 
@@ -185,8 +175,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   };
 
   $scope.updateCanvasFrame = function () {
-    $scope.count = (new Date() - $scope.formationStartTime)/1000;
-    var changed = 0;
+    $scope.count = (new Date() - $scope.formationStartTime)/750;
     if($scope.count > FormationService.getSelectedFormation().counts) {
       if(FormationService.selectedIndex < FormationService.formationList.length-1)
       {
@@ -201,8 +190,14 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     }
 
     if(FormationService.getSelectedFormation().type=='transition') {
-      CanvasService.renderCanvas(FormationService.getSelectedFormation(),  $scope.count);
+      CanvasService.renderCanvas($scope.count);
     }
+    if (Math.ceil($scope.count) != $scope.lastCount) {
+      $scope.lastCount = Math.max(1,Math.ceil($scope.count));
+      CanvasService.canvasState.valid = false;
+    }
+    CanvasService.canvasState.draw($scope.lastCount);
+
   };
 
   $scope.getBackgroundStyle = function() {
@@ -274,7 +269,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   };
 
   $scope.removePosition = function (index) {
-    var idx = FormationService.positionIndexForID(FormationService.getSelectedFormation(), 
+    var idx = positionIndexForID(FormationService.getSelectedFormation(), 
                                                                     $scope.dropdownTarget);
     if(FormationService.getSelectedFormation().type=='formation') {
       FormationService.getSelectedFormation().positions.splice(idx,1);
