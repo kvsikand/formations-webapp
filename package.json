@@ -5,7 +5,8 @@
   "private": true,
   "dependencies": {
     "body-parser": "^1.4.3",
-    "express": "4.x"
+    "express": "4.x",
+    "node-canvas":"1.1.5"
   },
   "engines": {
     "node": "0.10.x"
