@@ -34,5 +34,5 @@ var PositionsFromPositions = function(arr) {
 }
 
 
-if(module)
-  module.exports.Position = Position;
+// if(module)
+//   module.exports.Position = Position;

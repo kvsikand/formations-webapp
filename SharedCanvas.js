@@ -61,5 +61,5 @@ function positionIndexForID(formation, posID) {
 	return -1;
 }
 
-if(module)
-  module.exports.SharedCanvas = SharedCanvas;
+// if(module)
+//   module.exports.SharedCanvas = SharedCanvas;
