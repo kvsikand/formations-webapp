@@ -52,7 +52,7 @@ app.service('CanvasService', function (FormationService) {
 });
 
 
-app.controller('ContentController',function($scope, $rootScope, $interval, CanvasService, FormationService) {
+app.controller('ContentController',function($scope, $rootScope, $interval, CanvasService, FormationService, ConfigurationService) {
 	$scope.formationStartTime = null;
   $scope.playing = false;
   $scope.count = 0;
@@ -139,9 +139,11 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   // double click for making new shapes
   $scope.doubleClick = function(e) {
-    var mouse = CanvasService.canvasState.getMouse(e);
-    $scope.addPosition(FormationService.createPosition(mouse));
-    $scope.closeDropdown();
+    if(ConfigurationService.doubleClickAdd) {
+      var mouse = CanvasService.canvasState.getMouse(e);
+     $scope.addPosition(FormationService.createPosition(mouse));
+     $scope.closeDropdown();
+    }
   };
 
   $scope.pressPlay = function () {

@@ -19,9 +19,9 @@ app.controller('PositionsPanelController', function($scope, $rootScope, CanvasSe
         $scope.editedItem = item;
     };
         
-    $scope.doneEditing = function(item){
+    $scope.doneEditing = function(item, index){
         item.editing=false;
-		FormationService.positionInfo[item.posID].label = item.label;
+		FormationService.positionInfo[index].label = item.label;
         $scope.editedItem = null;
         CanvasService.updateCanvas(FormationService.selectedIndex);
     };

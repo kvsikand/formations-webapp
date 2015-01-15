@@ -45,6 +45,9 @@ app.service('FormationService', function () {
 			var idx = positionIndexForID(this.getSelectedFormation(), obj.args[0]);
 			this.getSelectedFormation().positions[idx].x = obj.args[1];
 			this.getSelectedFormation().positions[idx].y = obj.args[2];
+		} else if (obj.action == 'remove') {
+			var idx  = obj.args[0];
+			this.getSelectedFormation().splice(idx,1);
 		}
 
 	}

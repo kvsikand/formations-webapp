@@ -24,7 +24,7 @@ app.controller('UploadController', function($scope, $rootScope, $http, Formation
   $scope.importFormations = function(file) {
     FormationService.formationList = file.formationList;
     FormationService.positionInfo = file.positionInfo;
-    FormationService._positionCounter = file.positionInfo.length;
+    FormationService._positionCounter = Object.keys(file.positionInfo).length;
     $rootScope.selectFormation(FormationService.formationList.length-1);
   };
 

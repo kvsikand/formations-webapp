@@ -21,6 +21,7 @@
     <script src="Position.js"></script>
     <script src="Marker.js"></script>
     <script src="CanvasState.js"></script>
+    <script src="ConfigurationController.js"></script>
     <script src="ContentController.js"></script>
     <script src="utilities.js"></script>
     <script src="jui.js"></script>
@@ -59,6 +60,11 @@
         <br>
         <button id='play' class="ui-corner-bottom" ng-hide="playing" ng-click="pressPlay()"></button>
         <button id='pause' ng-show="playing" ng-click="pressPause()"></button>
+        <div id="configurationContainer" ng-controller="ConfigurationController">
+          <form action=""> 
+            <input type="checkbox" ng-click="toggleAdd()" ng-model="doubleClickAdd">Double click to add positions<br>
+          </form>
+        </div>
         <div id="importExportContainer" ng-controller="UploadController">
           <input id='import' type="file" ng-file-select="importFormations($files)"></input>
           <button id='export' ng-click="exportFormations()">Export</button>
@@ -75,8 +81,8 @@
         </div>
         <div ng-repeat="pos in getPositionList()" class="posEntry" ng-style="getStyle($index)" ng-dblclick="startEditing(pos)" ng-click="tappedPosition($index, $event)" ng-right-click="addExistingPosition($index, $event)" colorpicker>
           <span class="posLabel" ng-hide="pos.editing">{{pos.label}}</span>
-          <form class="posLabel" ng-submit="doneEditing(pos)" ng-show="pos.editing">
-              <input ng-model="pos.label" ng-blur="doneEditing(pos)" ng-focus="pos == editedItem" style="width:35px;"/>
+          <form class="posLabel" ng-submit="doneEditing(pos, $index)" ng-show="pos.editing">
+              <input ng-model="pos.label" ng-blur="doneEditing(pos, $index)" ng-focus="pos == editedItem" style="width:35px;"/>
           </form>
         </div>
       </div>

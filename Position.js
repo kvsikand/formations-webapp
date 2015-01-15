@@ -21,8 +21,6 @@ var Position = function (x, y, pid, col, lbl) {
 
 
   this.contains = function(mx, my) {
-    // All we have to do is make sure the Mouse X,Y fall in the area between
-    // the shape's X and (X + Height) and its Y and (Y + Height)
     return  Math.sqrt(Math.pow(this.x-mx,2) + Math.pow(this.y-my,2)) <= RADIUS;
 	}
 };
