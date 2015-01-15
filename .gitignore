@@ -1,3 +1,4 @@
 .DS_Store
 AWS-ElasticBeanstalk-CLI-2.6.3/*
+node_modules/
 .elasticbeanstalk/
