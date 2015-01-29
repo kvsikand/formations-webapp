@@ -3,6 +3,7 @@ var CanvasState = function(canvas, sharedCanvas) {
   this.canvas = canvas;
   this.width = canvas.width;
   this.height = canvas.height;
+  
   this.sharedCanvas = sharedCanvas;
   // This complicates things a little but but fixes mouse co-ordinate problems
   // when there's a border or padding. See getMouse for more detail
@@ -89,9 +90,9 @@ var CanvasState = function(canvas, sharedCanvas) {
     }
   }
 
-  this.draw = function (count) {
+  this.draw = function (args) {
       if (!this.valid) {
-        this.sharedCanvas.draw(this.shapes, count);
+        this.sharedCanvas.draw(this.shapes, args);
         this.valid = true;
       }
   }

@@ -1,7 +1,7 @@
 <div ng-style="mouseDropdownStyle()" ng-show="shouldShowDropdown()">
   <ul class="dropdownList">
 	<li class="dropdownEntry" ng-show="dropdownTarget != null" ng-click="removePosition(dropdownTarget)">Remove Position</li>
-    <li class="dropdownEntry" ng-click="doubleClick(dropdownEvent)">Add New Position</li>
+    <li class="dropdownEntry" ng-click="doubleClick({event : dropdownEvent, notDblClick : true})">Add New Position</li>
     <li class="dropdownEntry" ng-click="addMarker()">Add Marker</li>
   </ul>
 </div> 

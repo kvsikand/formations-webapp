@@ -24,7 +24,7 @@ app.service('CanvasService', function (FormationService) {
 
     instance.canvasState.removeUnmarkedShapes();
     instance.canvasState.valid = false;
-    instance.canvasState.draw();
+    instance.canvasState.draw({label : formation.label});
 	};
 
   this.renderCanvas = function (count) {
@@ -139,8 +139,13 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   // double click for making new shapes
   $scope.doubleClick = function(e) {
-    if(ConfigurationService.doubleClickAdd) {
-      var mouse = CanvasService.canvasState.getMouse(e);
+    var shouldAdd = ConfigurationService.doubleClickAdd;
+    if(e.notDblClick != undefined) {
+      e = e.event;
+      shouldAdd = true;
+    }
+    if(shouldAdd) {
+     var mouse = CanvasService.canvasState.getMouse(e);
      $scope.addPosition(FormationService.createPosition(mouse));
      $scope.closeDropdown();
     }
@@ -198,7 +203,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       $scope.lastCount = Math.max(1,Math.ceil($scope.count));
       CanvasService.canvasState.valid = false;
     }
-    CanvasService.canvasState.draw($scope.lastCount);
+    CanvasService.canvasState.draw({ count : $scope.lastCount, label : FormationService.getSelectedFormation().label });
 
   };
 

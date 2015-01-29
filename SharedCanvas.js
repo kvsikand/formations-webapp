@@ -1,14 +1,23 @@
 var SharedCanvas = function(context, width, height) {
 	this.ctx = context;
+  this.ctx.font = "18px Arial";
+  this.ctx.strokeStyle = 'black';
   this.width = width;
   this.height = height;
   //has no state
-  this.draw = function(shapes, count) {
+  this.draw = function(shapes, args) {
 	    this.clear();
-      if(count != undefined) {
+      var textOffset = 20;
+      if(args != undefined && args.count != undefined) {
         this.ctx.fillStyle="#333333";
-        this.ctx.fillText("Count: " + count, this.width/2, 20);
+        this.ctx.fillText("Count: " + args.count, this.width/2 - this.ctx.measureText("Count: " + args.count).width/2, textOffset);
+        textOffset += 20;
       }
+      // if(args != undefined && args.label != undefined) {
+      //   this.ctx.fillStyle="#333333";
+      //   this.ctx.fillText("Label: " + args.label, this.width/2 - this.ctx.measureText("Label: " + args.label).width/2, textOffset);
+      // }
+
 	    	    
 	    // draw all shapes
 	    var l = shapes.length;

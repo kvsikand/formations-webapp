@@ -78,9 +78,9 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 		var pos = [];
 		if(FormationService.formationList.length > 0) {
 			pos = PositionsFromPositions(FormationService.formationList[FormationService.formationList.length-1].positions);
-			FormationService.formationList.push({name: 'transition ' + (FormationService.formationList.length+1), counts:4, type: 'transition'});
+			FormationService.formationList.push({name: 'transition ' + (FormationService.formationList.length+1), counts:4, type: 'transition', label:''});
 		}
-		FormationService.formationList.push({name: 'formation ' + (FormationService.formationList.length+1), positions:pos, counts:4, type: 'formation'});
+		FormationService.formationList.push({name: 'formation ' + (FormationService.formationList.length+1), positions:pos, counts:4, type: 'formation', label:''});
 		
 		$rootScope.selectFormation(FormationService.formationList.length-1);
 		
@@ -183,3 +183,17 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     	FormationService.deleteFormation(index);
     }
 });
+
+app.directive('ngEnter', function() {
+        return function(scope, element, attrs) {
+            element.bind("keydown keypress", function(event) {
+                if(event.which === 13) {
+                    scope.$apply(function(){
+                        scope.$eval(attrs.ngEnter, {'event': event});
+                    });
+
+                    event.preventDefault();
+                }
+            });
+        };
+    });

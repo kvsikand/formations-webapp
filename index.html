@@ -34,9 +34,10 @@
         </div>
         <div ng-repeat="form in getFormationList() track by $index" style="display : inline-flex; vertical-align:middle;">
           <div ng-class='getClass(form)' ng-style="getFormationStyle($index)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" ng-mousedown="startDragging($index,$event)" class="entry">
-            <span ng-hide="form.editing">{{form.name}}</span>
+            <span ng-hide="form.editing">{{form.name}}</span><br>
+            <!-- <span ng-hide="form.editing">Label: {{form.label}}</span> -->
             <form ng-submit="doneEditing(form)" ng-show="form.editing">
-                <input ng-model="form.name" ng-blur="doneEditing(form)" ng-focus="form == editedItem" class="editName">
+                <input ng-enter="doneEditing(form)" ng-model="form.name" ng-focus="form == editedItem" class="editName"> </input>
             </form>
             <br>
             <div class='countDragger'>Counts: {{form.counts}}</div>
