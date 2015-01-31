@@ -13,10 +13,10 @@ var SharedCanvas = function(context, width, height) {
         this.ctx.fillText("Count: " + args.count, this.width/2 - this.ctx.measureText("Count: " + args.count).width/2, textOffset);
         textOffset += 20;
       }
-      // if(args != undefined && args.label != undefined) {
-      //   this.ctx.fillStyle="#333333";
-      //   this.ctx.fillText("Label: " + args.label, this.width/2 - this.ctx.measureText("Label: " + args.label).width/2, textOffset);
-      // }
+      if(args != undefined && args.name != undefined) {
+        this.ctx.fillStyle="#333333";
+        this.ctx.fillText(args.name, this.width/2 - this.ctx.measureText(args.name).width/2, textOffset);
+      }
 
 	    	    
 	    // draw all shapes

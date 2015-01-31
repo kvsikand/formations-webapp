@@ -203,7 +203,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       $scope.lastCount = Math.max(1,Math.ceil($scope.count));
       CanvasService.canvasState.valid = false;
     }
-    CanvasService.canvasState.draw({ count : $scope.lastCount, label : FormationService.getSelectedFormation().label });
+    CanvasService.canvasState.draw({ count : $scope.lastCount, name : FormationService.getSelectedFormation().name });
 
   };
 
