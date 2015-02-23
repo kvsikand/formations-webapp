@@ -6,8 +6,8 @@
   "dependencies": {
     "body-parser": "^1.4.3",
     "canvas": "^1.2.1",
-    "sleep": "^1.1.8",
-    "express": "~4.9.x"
+    "express": "~4.9.x",
+    "sleep": "^1.1.8"
   },
   "engines": {
     "node": "0.10.29"
