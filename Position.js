@@ -1,5 +1,6 @@
+var POSITION_RADIUS = 20;
+
 var Position = function (x, y, pid, col, lbl) {
-	var RADIUS = 20;
   var POSITION_TYPE = 0;
   this.x = x || 0;
 	this.y = y || 0;
@@ -11,7 +12,7 @@ var Position = function (x, y, pid, col, lbl) {
   // Draws this shape to a given context
   this.draw = function(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, RADIUS, 0, 2 * Math.PI, false);
+    ctx.arc(this.x, this.y, POSITION_RADIUS, 0, 2 * Math.PI, false);
     ctx.fillStyle = this.color;
     ctx.fill(); 
     ctx.font = "18px Arial";
@@ -21,7 +22,7 @@ var Position = function (x, y, pid, col, lbl) {
 
 
   this.contains = function(mx, my) {
-    return  Math.sqrt(Math.pow(this.x-mx,2) + Math.pow(this.y-my,2)) <= RADIUS;
+    return  Math.sqrt(Math.pow(this.x-mx,2) + Math.pow(this.y-my,2)) <= POSITION_RADIUS;
 	}
 };
 

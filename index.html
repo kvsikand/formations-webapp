@@ -62,8 +62,8 @@
         <div id="configurationContainer" ng-controller="ConfigurationController">
           <form action=""> 
             <input type="checkbox" ng-click="toggleAdd()" ng-model="doubleClickAdd">Double click to add positions<br>
-            <input type="checkbox" ng-click="toggleSnap()" ng-model="snapToGrid">Snap To Grid<br>
           </form>
+          <span> Hold shift to enable Snap To Grid </span>
         </div>
         <div id="importExportContainer" ng-controller="UploadController">
           <input id='import' type="file" ng-file-select="importFormations($files)"></input>
