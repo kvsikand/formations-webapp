@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "body-parser": "^1.4.3",
-    "canvas": "^1.1.5",
+    "canvas": "^1.2.1",
     "sleep": "^1.1.8",
     "express": "~4.9.x"
   },
