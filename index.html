@@ -34,14 +34,12 @@
         </div>
         <div ng-repeat="form in getFormationList() track by $index" style="display : inline-flex; vertical-align:middle;">
           <div ng-class='getClass(form)' ng-style="getFormationStyle($index)" ng-click="selectFormation($index)" ng-dblclick="startEditing(form)" ng-mousedown="startDragging($index,$event)" class="entry">
-            <span ng-hide="form.editing">{{form.name}}</span><br>
+            <span ng-hide="form.editing" class="formationName">{{form.name}}</span>
             <!-- <span ng-hide="form.editing">Label: {{form.label}}</span> -->
             <form ng-submit="doneEditing(form)" ng-show="form.editing">
                 <input ng-enter="doneEditing(form)" ng-model="form.name" ng-focus="form == editedItem" class="editName"> </input>
             </form>
-            <br>
             <div class='countDragger'>Counts: {{form.counts}}</div>
-            <br>
           </div>
           <button class="" ng-click="deleteFormation($index)" ng-show="form.type=='formation'">-</button>
         </div>
@@ -64,6 +62,7 @@
         <div id="configurationContainer" ng-controller="ConfigurationController">
           <form action=""> 
             <input type="checkbox" ng-click="toggleAdd()" ng-model="doubleClickAdd">Double click to add positions<br>
+            <input type="checkbox" ng-click="toggleSnap()" ng-model="snapToGrid">Snap To Grid<br>
           </form>
         </div>
         <div id="importExportContainer" ng-controller="UploadController">

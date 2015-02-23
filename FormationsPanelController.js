@@ -135,9 +135,9 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 
     $scope.getFormationStyle = function(index) {
     	if(!($scope.dragging == index))	 {
-    		height = ((FormationService.formationList[index].counts * 10) + 50) +'px';
+    		height = ((FormationService.formationList[index].counts * 10) + 80) +'px';
     	} else {
-    		height = (50+($scope.currY-$scope.startY) + $scope.startCounts * 10) +'px';
+    		height = (80+($scope.currY-$scope.startY) + $scope.startCounts * 10) +'px';
     	}
 
     	var style =  { 
