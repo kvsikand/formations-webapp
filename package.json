@@ -7,7 +7,7 @@
     "body-parser": "^1.4.3",
     "canvas": "^1.1.5",
     "sleep": "^1.1.8",
-    "express": "4.x"
+    "express": "~4.9.x"
   },
   "engines": {
     "node": "0.10.x"
