@@ -111,10 +111,12 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       if(e.shiftKey && form.type == 'formation') {
         //expensive for now
         for(var i = 0; i < form.positions.length; i++) {
-          if(Math.abs(CanvasService.canvasState.selection.x - form.positions[i].x) < 20)
-            CanvasService.canvasState.selection.x = form.positions[i].x;
-          if(Math.abs(CanvasService.canvasState.selection.y - form.positions[i].y) < 20)
-            CanvasService.canvasState.selection.y = form.positions[i].y;
+          if(i != FormationService.selectedIndex) {
+            if(Math.abs(CanvasService.canvasState.selection.x - form.positions[i].x) < 20)
+              CanvasService.canvasState.selection.x = form.positions[i].x;
+            if(Math.abs(CanvasService.canvasState.selection.y - form.positions[i].y) < 20)
+              CanvasService.canvasState.selection.y = form.positions[i].y;
+          }
         }
       }
 
