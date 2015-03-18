@@ -13,7 +13,7 @@ app.service('FormationService', function () {
 	this.createPosition = function(mouse) {
 		var randColor = 'rgba(' + getRandomInt(0,255) + ',' + getRandomInt(0,255) + ',' + getRandomInt(0,255) + ',.6)';
 		var pos = {x: mouse.x, y: mouse.y, posID: this._positionCounter};
-		this.positionInfo[this._positionCounter] = {color: randColor, label: this._positionCounter};
+		this.positionInfo[this._positionCounter] = {color: randColor, label: this._positionCounter, posID: this._positionCounter};
 		this._positionCounter++;
 		return pos;
 	}
@@ -22,48 +22,19 @@ app.service('FormationService', function () {
 		return {x: mouse.x, y:mouse.y, posID: posID};
 	}
 
-	this.createIntermediateFormation = function(obj) {		
-		var newForm;
-		var trans = {name: 'transition ' + (this.selectedIndex+1), counts:this.getSelectedFormation().counts/2, type: 'transition'};
-		if(this.getSelectedFormation().type=='formation') {
-			newForm = JSON.parse(JSON.stringify(this.getSelectedFormation()));
-			this.formationList.splice(this.selectedIndex+1,0,trans,newForm);
-		} else {
-			this.getSelectedFormation().counts = this.getSelectedFormation().counts/2;
-			newForm = JSON.parse(JSON.stringify(this.formationList[this.selectedIndex-1]));
-			this.formationList.splice(this.selectedIndex+1,0,newForm,trans);
-		}
-		newForm.counts = 0;
-		if(this.getSelectedFormation())
-			this.getSelectedFormation().selected = false;
-		this.selectedIndex = this.formationList.indexOf(newForm);
-		this.getSelectedFormation().selected = true;
-
-		if(obj.action == 'add') {
-			
-		} else if (obj.action == 'move') {
-			var idx = positionIndexForID(this.getSelectedFormation(), obj.args[0]);
-			this.getSelectedFormation().positions[idx].x = obj.args[1];
-			this.getSelectedFormation().positions[idx].y = obj.args[2];
-		} else if (obj.action == 'remove') {
-			var idx  = obj.args[0];
-			this.getSelectedFormation().splice(idx,1);
-		}
-
-	}
-
 	this.deleteFormation = function(index) {
 		var selected = this.getSelectedFormation();
 		var count = 2;
 		if(index == this.formationList.length-1) {
 			index = index - 1;
 		}
-		this.formationList.splice(index,count);
+		forms = this.formationList.splice(index,count);
 		this.selectedIndex = this.formationList.indexOf(selected);
+		return forms
 	}
 });
 
-app.controller('FormationsPanelController', function($scope, $rootScope, CanvasService, FormationService) {
+app.controller('FormationsPanelController', function($scope, $rootScope, CanvasService, FormationService, ActionService) {
 	$scope.editedItem = null;
 	$scope.mouseDown = false;
 	$scope.dragging = -1;
@@ -75,23 +46,15 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
 	}
 
 	$rootScope.addFormation = function() {
-		var pos = [];
-		if(FormationService.formationList.length > 0) {
-			pos = PositionsFromPositions(FormationService.formationList[FormationService.formationList.length-1].positions);
-			FormationService.formationList.push({name: 'transition ' + (FormationService.formationList.length+1), counts:4, type: 'transition', label:''});
-		}
-		FormationService.formationList.push({name: 'formation ' + (FormationService.formationList.length+1), positions:pos, counts:4, type: 'formation', label:''});
-		
-		$rootScope.selectFormation(FormationService.formationList.length-1);
-		
+		ActionService.addAction(new Action('addFormation',{}));
 	};
 
 	$rootScope.selectFormation = function (index) {
-		if(FormationService.getSelectedFormation())
-			FormationService.getSelectedFormation().selected = false;
-		FormationService.selectedIndex = index;
-		FormationService.getSelectedFormation().selected = true;
-		CanvasService.updateCanvas(index);
+		if(index != FormationService.selectedIndex) {
+			ActionService.addAction(new Action('selectFormation', {"index":index}));
+		} else {
+			CanvasService.updateCanvas(index);
+		}
 	};
 
 	$scope.startEditing = function(item){
@@ -127,6 +90,7 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     }
 
     $scope.stopDragging = function (event) {
+    	ActionService.addAction(new Action('changeCounts', {"startCounts":$scope.startCounts, "index":$scope.dragging}));
     	$scope.dragging = -1;
     	$scope.currY = 0;
     	$scope.startY = 0;
@@ -179,8 +143,7 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     }
 
     $scope.deleteFormation = function(index) {
-    	console.log('deleting formation ' + index);
-    	FormationService.deleteFormation(index);
+    	ActionService.addAction(new Action('deleteFormation', {"index":index}));
     }
 });
 

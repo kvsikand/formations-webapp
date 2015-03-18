@@ -26,7 +26,8 @@ var SharedCanvas = function(context, width, height) {
 	      // We can skip the drawing of elements that have moved off the screen:
 	      if (shape.x > this.width || shape.y > this.height ||
 	          shape.x + shape.w < 0 || shape.y + shape.h < 0) continue;
-	      shapes[i].draw(this.ctx);
+
+	      shapes[i].draw(this.ctx, args.selection.indexOf(shape) != -1);
 	    }
   }	 
 

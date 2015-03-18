@@ -1,5 +1,5 @@
 var POSITION_RADIUS = 20;
-
+var selectionColor = '#AFA'
 var Position = function (x, y, pid, col, lbl) {
   var POSITION_TYPE = 0;
   this.x = x || 0;
@@ -10,10 +10,13 @@ var Position = function (x, y, pid, col, lbl) {
 	this.marked = true;
 	this.type = POSITION_TYPE;
   // Draws this shape to a given context
-  this.draw = function(ctx) {
+  this.draw = function(ctx, selected) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, POSITION_RADIUS, 0, 2 * Math.PI, false);
     ctx.fillStyle = this.color;
+    if(selected) {
+      ctx.fillStyle = selectionColor;
+    }
     ctx.fill(); 
     ctx.font = "18px Arial";
     ctx.strokeStyle = 'black';

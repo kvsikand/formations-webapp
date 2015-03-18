@@ -37,38 +37,21 @@ app.service('CanvasService', function (FormationService) {
     instance.markerList.push(loc);
     instance.canvasState.addShape(new Marker(loc));
   };
-
-  this.addPositionWithInfo = function(posInfo, mouseEvent) {
-    var mouse = mouseEvent == null ? { x : 600/2, y : 280/2  } : instance.canvasState.getMouse(mouseEvent);
-    if(positionIndexForID(FormationService.getSelectedFormation(),posInfo.posID) == -1) {
-      if(FormationService.getSelectedFormation().type=='formation') {
-        instance.canvasState.addShape(new Position(mouse.x, mouse.y, posInfo.posID, posInfo.color, posInfo.label));
-        FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(mouse,posInfo.posID));
-      } else {
-        FormationService.createIntermediateFormation({'action':'add','args':[posInfo, mouseEvent]});
-      }
-    }
-  };
 });
 
 
-app.controller('ContentController',function($scope, $rootScope, $interval, CanvasService, FormationService, ConfigurationService) {
+app.controller('ContentController',function($scope, $rootScope, $interval, CanvasService, FormationService, ConfigurationService, ActionService) {
 	$scope.formationStartTime = null;
   $scope.playing = false;
   $scope.count = 0;
   $scope.showMouseDropdown = false;
+  
 	$scope.initContent = function() {
     var canvas = document.getElementById('canvas');
     CanvasService.sharedCanvas = new SharedCanvas(canvas.getContext('2d'), canvas.width, canvas.height)
 	  CanvasService.canvasState = new CanvasState(canvas, CanvasService.sharedCanvas);
     $rootScope.addFormation();
-	};
-
-
-	$scope.addPosition = function(pos) {
-    var posInfo = FormationService.positionInfo[pos.posID];
-		CanvasService.canvasState.addShape(new Position(pos.x, pos.y, pos.posID, posInfo.color, posInfo.label));
-		FormationService.getSelectedFormation().positions.push(pos);
+    ActionService.undoStack = []; //cant undo the initial action
 	};
 
 	$scope.mouseDown = function(event) {
@@ -83,10 +66,14 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 	        var mySel = shapes[i];
 	        // Keep track of where in the object we clicked
 	        // so we can move it smoothly (see mousemove)
-	        CanvasService.canvasState.dragoffx = mx - mySel.x;
-	        CanvasService.canvasState.dragoffy = my - mySel.y;
-	        CanvasService.canvasState.dragging = true;
-	        CanvasService.canvasState.selection = mySel;
+          CanvasService.canvasState.dragging = true;
+          CanvasService.canvasState.dragoffx = mx;
+          CanvasService.canvasState.dragoffy = my;
+          if(event.metaKey || event.ctrlKey) {
+            CanvasService.canvasState.selection.push(mySel);
+          } else {
+            CanvasService.canvasState.selection = [mySel,];
+          }
 	        CanvasService.canvasState.valid = false;
 	        return;
 	      }
@@ -94,7 +81,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 	    // havent returned means we have failed to select anything.
 	    // If there was an object selected, we deselect it
 	    if (CanvasService.canvasState.selection) {
-	      CanvasService.canvasState.selection = null;
+	      CanvasService.canvasState.selection = [];
 	      CanvasService.canvasState.valid = false; // Need to clear the old selection border
 	    }
   	};
@@ -104,19 +91,39 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       var mouse = CanvasService.canvasState.getMouse(e);
       // We don't want to drag the object by its top-left corner, we want to drag it
       // from where we clicked. Thats why we saved the offset and use it here
-      CanvasService.canvasState.selection.x = mouse.x - CanvasService.canvasState.dragoffx;
-      CanvasService.canvasState.selection.y = mouse.y - CanvasService.canvasState.dragoffy;
-
+      var deltaX = mouse.x - CanvasService.canvasState.dragoffx;
+      var deltaY = mouse.y - CanvasService.canvasState.dragoffy;
+      for(var k=0; k < CanvasService.canvasState.selection.length; k++) {
+        selection = CanvasService.canvasState.selection[k];
+        selection.x = selection.x + deltaX;
+        selection.y = selection.y + deltaY;
+      }
+      CanvasService.canvasState.dragoffx = mouse.x;
+      CanvasService.canvasState.dragoffy = mouse.y;
       var form = FormationService.getSelectedFormation();
       if(e.shiftKey && form.type == 'formation') {
         //expensive for now
-        for(var i = 0; i < form.positions.length; i++) {
-          if(i != FormationService.selectedIndex) {
-            if(Math.abs(CanvasService.canvasState.selection.x - form.positions[i].x) < 20)
-              CanvasService.canvasState.selection.x = form.positions[i].x;
-            if(Math.abs(CanvasService.canvasState.selection.y - form.positions[i].y) < 20)
-              CanvasService.canvasState.selection.y = form.positions[i].y;
+
+        for(var k=0; k < CanvasService.canvasState.selection.length; k++) {
+          selection = CanvasService.canvasState.selection[k];
+          var minDistX = 100, minDistY = 100;
+          var snapX = selection.x, snapY = selection.y;
+          for(var i = 0; i < form.positions.length; i++) {
+            if(i != k) {
+              var distX =Math.abs(selection.x - form.positions[i].x);
+              var distY =Math.abs(selection.y - form.positions[i].y);
+              if(distX < minDistX && distX < 20) {
+                snapX = form.positions[i].x;
+                minDistX = distX;
+              }
+              if(distY < minDistY && distY < 20) {
+                snapY = form.positions[i].y;
+                minDistX = distY;
+              }
+            }
           }
+          selection.x = snapX;
+          selection.y = snapY;
         }
       }
 
@@ -127,14 +134,13 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   $scope.mouseUp = function(e) {
     CanvasService.canvasState.dragging = false;
-    if(CanvasService.canvasState.selection && CanvasService.canvasState.selection.type==0) {
-      var pid =  CanvasService.canvasState.selection.posID;
+    if(CanvasService.canvasState.selection.length > 0) {
       if (FormationService.getSelectedFormation().type=='formation'){
-        var index = positionIndexForID(FormationService.getSelectedFormation(),pid);
-        FormationService.getSelectedFormation().positions[index].x = CanvasService.canvasState.selection.x;
-        FormationService.getSelectedFormation().positions[index].y = CanvasService.canvasState.selection.y;
+        ActionService.addAction(new Action('moveSelection', {"selection":JSON.parse(JSON.stringify(CanvasService.canvasState.selection))}));
       } else {
-        FormationService.createIntermediateFormation({'action':'move','args':[pid,CanvasService.canvasState.selection.x,CanvasService.canvasState.selection.y]});
+        alert("Cannot modify positions in a transition, create a new formation");
+        CanvasService.canvasState.valid = false; 
+        $scope.updateCanvasFrame();
       }
     }
   };
@@ -148,7 +154,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     }
     if(shouldAdd) {
      var mouse = CanvasService.canvasState.getMouse(e);
-     $scope.addPosition(FormationService.createPosition(mouse));
+     ActionService.addAction(new Action('addPosition',{"mouse":mouse}));
      $scope.closeDropdown();
     }
   };
@@ -278,16 +284,32 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   };
 
   $scope.removePosition = function (index) {
-    var idx = positionIndexForID(FormationService.getSelectedFormation(), 
-                                                                    $scope.dropdownTarget);
-    if(FormationService.getSelectedFormation().type=='formation') {
-      FormationService.getSelectedFormation().positions.splice(idx,1);
+   if(FormationService.getSelectedFormation().type=='formation') {
+      ActionService.addAction(new Action('removePosition', {"target" : $scope.dropdownTarget}));
     } else {
-      FormationService.createIntermediateFormation({'action':'remove', 'args' : [idx]});
+      alert("Cannot modify positions in a transition, create a new formation");
     }
     CanvasService.updateCanvas(FormationService.selectedIndex);
     $scope.closeDropdown(); 
   };
+
+  $scope.undo = function () {
+    ActionService.undo();
+  };
+
+  $scope.redo = function() {
+    ActionService.redo();
+  };
+
+  $scope.canUndo = function() {
+    return ActionService.undoStack.length > 0
+  };
+
+  $scope.canRedo = function() {
+    return ActionService.redoStack.length > 0
+  };
+
+
 });
 
 

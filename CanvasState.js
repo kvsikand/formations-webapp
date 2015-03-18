@@ -27,7 +27,7 @@ var CanvasState = function(canvas, sharedCanvas) {
 
   this.dragging = false; // Keep track of when we are dragging
   // the current selected object. In the future we could turn this into an array for multiple selection
-  this.selection = null;
+  this.selection = [];
   this.dragoffx = 0; // See mousedown and mousemove events for explanation
   this.dragoffy = 0;
   
@@ -92,6 +92,10 @@ var CanvasState = function(canvas, sharedCanvas) {
 
   this.draw = function (args) {
       if (!this.valid) {
+        if(!args) {
+          args = {}
+        }
+        args.selection = this.selection
         this.sharedCanvas.draw(this.shapes, args);
         this.valid = true;
       }

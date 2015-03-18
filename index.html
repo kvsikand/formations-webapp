@@ -23,6 +23,7 @@
     <script src="CanvasState.js"></script>
     <script src="ConfigurationController.js"></script>
     <script src="ContentController.js"></script>
+    <script src="ActionService.js"></script>
     <script src="utilities.js"></script>
     <script src="jui.js"></script>
   </head>
@@ -57,7 +58,9 @@
           </div>
         </div>
         <br>
+        <button id='undo' class ='ui-corner-bottom' ng-show="canUndo()" ng-click="undo()">Undo</button>
         <button id='play' class="ui-corner-bottom" ng-hide="playing" ng-click="pressPlay()"></button>
+        <button id='redo' class ='ui-corner-bottom' ng-show="canRedo()" ng-click="redo()">Redo</button>
         <button id='pause' ng-show="playing" ng-click="pressPause()"></button>
         <div id="configurationContainer" ng-controller="ConfigurationController">
           <form action=""> 
