@@ -90,7 +90,9 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     }
 
     $scope.stopDragging = function (event) {
-    	ActionService.addAction(new Action('changeCounts', {"startCounts":$scope.startCounts, "index":$scope.dragging}));
+    	if($scope.dragging 1= -1) {
+	    	ActionService.addAction(new Action('changeCounts', {"startCounts":$scope.startCounts, "index":$scope.dragging}));
+    	}
     	$scope.dragging = -1;
     	$scope.currY = 0;
     	$scope.startY = 0;
