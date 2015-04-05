@@ -53,7 +53,7 @@ app.controller('UploadController', function($scope, $rootScope, $http, Formation
        element.attr({
            href: '/exportVideo',
            target: '_blank',
-           download: 'formations.mp4'
+           download: ''
        })[0].click();
     });
   };

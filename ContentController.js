@@ -70,7 +70,8 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
           CanvasService.canvasState.dragoffx = mx;
           CanvasService.canvasState.dragoffy = my;
           if(event.metaKey || event.ctrlKey) {
-            CanvasService.canvasState.selection.push(mySel);
+            if (CanvasService.canvasState.selection.indexOf(mySel) == -1)
+              CanvasService.canvasState.selection.push(mySel);
           } else {
             CanvasService.canvasState.selection = [mySel,];
           }
