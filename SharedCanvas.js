@@ -86,13 +86,5 @@ var SharedCanvas = function(context, width, height) {
   }
 };
 
-function positionIndexForID(formation, posID) {
-	for(var i = 0; i < formation.positions.length; i++) {
-		if(formation.positions[i].posID == posID)
-			return i;
-	}
-	return -1;
-}
-
 if(typeof module !== 'undefined')
   module.exports.SharedCanvas = SharedCanvas;

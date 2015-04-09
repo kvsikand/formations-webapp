@@ -7,28 +7,27 @@ var CanvasState = function(canvas, sharedCanvas) {
                "y" : new Axis("y", this.height)};
   
   this.sharedCanvas = sharedCanvas;
-  // This complicates things a little but but fixes mouse co-ordinate problems
-  // when there's a border or padding. See getMouse for more detail
+
   var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
+
+  //deal with padding/border issues from cc
   if (document.defaultView && document.defaultView.getComputedStyle) {
     this.stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(canvas, null)['paddingLeft'], 10)      || 0;
     this.stylePaddingTop  = parseInt(document.defaultView.getComputedStyle(canvas, null)['paddingTop'], 10)       || 0;
     this.styleBorderLeft  = parseInt(document.defaultView.getComputedStyle(canvas, null)['borderLeftWidth'], 10)  || 0;
     this.styleBorderTop   = parseInt(document.defaultView.getComputedStyle(canvas, null)['borderTopWidth'], 10)   || 0;
   }
-  // Some pages have fixed-position bars (like the stumbleupon bar) at the top or left of the page
-  // They will mess up mouse coordinates and this fixes that
+
+  //fix for pages with static top or left bar
   var html = document.body.parentNode;
   this.htmlTop = html.offsetTop;
   this.htmlLeft = html.offsetLeft;
-
-  // **** Keep track of state! ****
   
   this.valid = false; // when set to false, the canvas will redraw everything
-  this.shapes = [];  // the collection of things to be drawn
+  this.shapes = [];  // the collection of shapes to be drawn
 
   this.dragging = false; // Keep track of when we are dragging
-  // the current selected object. In the future we could turn this into an array for multiple selection
+
   this.selection = [];
   this.dragoffx = 0; // See mousedown and mousemove events for explanation
   this.dragoffy = 0;
@@ -36,12 +35,10 @@ var CanvasState = function(canvas, sharedCanvas) {
 
   var myState = this;
   
-  //fixes a problem where double clicking causes text to get selected on the canvas
   canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
      
-  this.selectionColor = '#CC0000';
-  this.selectionWidth = 2;  
-  this.interval = 30;
+  this.interval = 30; //redraw every 30 ms
+
   setInterval(function() { myState.draw(); }, myState.interval);
 
   this.addShape = function(shape) {

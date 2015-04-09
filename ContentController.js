@@ -101,8 +101,8 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       var deltaY = mouse.y - CanvasService.canvasState.dragoffy;
       for(var k=0; k < CanvasService.canvasState.selection.length; k++) {
         selection = CanvasService.canvasState.selection[k];
-        selection.x = selection.x + deltaX;
-        selection.y = selection.y + deltaY;
+        selection.x = Math.min(Math.max(selection.x + deltaX, 0), CanvasService.canvasState.width);
+        selection.y = Math.min(Math.max(selection.y + deltaY, 0), CanvasService.canvasState.height);
       }
       CanvasService.canvasState.dragoffx = mouse.x;
       CanvasService.canvasState.dragoffy = mouse.y;

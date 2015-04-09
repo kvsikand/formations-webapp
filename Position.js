@@ -1,6 +1,5 @@
 var POSITION_RADIUS = 20;
 var POSITION_TYPE = 0;
-var selectionColor = '#AFA'
 var Position = function (x, y, pid, col, lbl) {
   this.x = x || 0;
 	this.y = y || 0;
@@ -15,12 +14,17 @@ var Position = function (x, y, pid, col, lbl) {
     ctx.arc(this.x, this.y, POSITION_RADIUS, 0, 2 * Math.PI, false);
     ctx.fillStyle = this.color;
     if(selected) {
-      ctx.fillStyle = selectionColor;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "yellow";
+    } else {
+      ctx.shadowBlur = 0;
     }
     ctx.fill(); 
     ctx.font = "18px Arial";
     ctx.strokeStyle = 'black';
     ctx.strokeText(this.label, this.x-ctx.measureText(this.label).width/2, this.y+7);
+    ctx.shadowBlur = 0;
+
   };
 
 

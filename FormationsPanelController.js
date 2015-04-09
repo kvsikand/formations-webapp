@@ -178,6 +178,14 @@ app.controller('FormationsPanelController', function($scope, $rootScope, CanvasS
     }
 });
 
+function positionIndexForID(formation, posID) {
+  for(var i = 0; i < formation.positions.length; i++) {
+    if(formation.positions[i].posID == posID)
+      return i;
+  }
+  return -1;
+}
+
 app.directive('ngEnter', function() {
         return function(scope, element, attrs) {
             element.bind("keydown keypress", function(event) {
