@@ -3,6 +3,8 @@ var CanvasState = function(canvas, sharedCanvas) {
   this.canvas = canvas;
   this.width = canvas.width;
   this.height = canvas.height;
+  this.axes = {"x" : new Axis("x", this.width),
+               "y" : new Axis("y", this.height)};
   
   this.sharedCanvas = sharedCanvas;
   // This complicates things a little but but fixes mouse co-ordinate problems
@@ -96,7 +98,7 @@ var CanvasState = function(canvas, sharedCanvas) {
           args = {}
         }
         args.selection = this.selection
-        this.sharedCanvas.draw(this.shapes, args);
+        this.sharedCanvas.draw(this.shapes, this.axes, args);
         this.valid = true;
       }
   }

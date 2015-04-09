@@ -5,7 +5,7 @@ var SharedCanvas = function(context, width, height) {
   this.width = width;
   this.height = height;
   //has no state
-  this.draw = function(shapes, args) {
+  this.draw = function(shapes, axes, args) {
 	    this.clear();
       var textOffset = 20;
       if(args != undefined && args.count != undefined) {
@@ -28,7 +28,30 @@ var SharedCanvas = function(context, width, height) {
 	          shape.x + shape.w < 0 || shape.y + shape.h < 0) continue;
 
 	      shapes[i].draw(this.ctx, args.selection.indexOf(shape) != -1);
-	    }
+      }
+      //draw grid
+      var positions = axes["x"].getPositions();
+      axes["x"].draw(this.ctx);
+      this.ctx.strokeStyle = '#202020';
+      this.ctx.setLineDash([2, 4]);
+      for(var i = 0; i < positions.length; i++) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(positions[i], 0);
+          this.ctx.lineTo(positions[i], this.height);
+          this.ctx.stroke();
+          this.ctx.closePath();
+      }
+
+      positions = axes["y"].getPositions();
+      axes["y"].draw(this.ctx);
+      for(var i = 0; i < positions.length; i++) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, positions[i]);
+          this.ctx.lineTo(this.width, positions[i]);
+          this.ctx.stroke();
+          this.ctx.closePath();
+      }
+      this.ctx.setLineDash([1, 0]);
   }	 
 
   this.clear = function() {

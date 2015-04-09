@@ -19,11 +19,11 @@
     <script src="PositionsPanelController.js"></script>
     <script src="uploader.js"></script>
     <script src="Position.js"></script>
-    <script src="Marker.js"></script>
     <script src="CanvasState.js"></script>
     <script src="ConfigurationController.js"></script>
     <script src="ContentController.js"></script>
     <script src="ActionService.js"></script>
+    <script src="Axis.js"></script>
     <script src="utilities.js"></script>
     <script src="jui.js"></script>
   </head>
@@ -66,7 +66,7 @@
           <form action=""> 
             <input type="checkbox" ng-click="toggleAdd()" ng-model="doubleClickAdd">Double click to add positions<br>
           </form>
-          <span> Hold shift to enable Snap To Grid </span>
+          <span> Hold shift to select and move multiple positions </span>
         </div>
         <div id="importExportContainer" ng-controller="UploadController">
           <input id='import' type="file" ng-file-select="importFormations($files)"></input>

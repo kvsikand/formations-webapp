@@ -1,7 +1,7 @@
 var POSITION_RADIUS = 20;
+var POSITION_TYPE = 0;
 var selectionColor = '#AFA'
 var Position = function (x, y, pid, col, lbl) {
-  var POSITION_TYPE = 0;
   this.x = x || 0;
 	this.y = y || 0;
 	this.posID = pid || 0;
