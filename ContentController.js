@@ -1,35 +1,34 @@
 app.service('CanvasService', function (FormationService) { 
 	var instance = this;
-	this.canvasState = null;
   this.sharedCanvas = null;
 
 	this.updateCanvas = function (index) {
     var formation = FormationService.formationList[index];
-    instance.canvasState.unmarkAllShapes();
+    instance.sharedCanvas.unmarkAllShapes();
     if(formation.type == 'formation') {
       for(var i = 0; i < formation.positions.length; i++) {
         var pos = formation.positions[i];
         var posInfo = FormationService.positionInfo[pos.posID];
-        instance.canvasState.markOrAddShapeWithPosition(pos, posInfo);
+        instance.sharedCanvas.markOrAddShapeWithPosition(pos, posInfo);
       }
     } else { //its a transition, interpolate positions
       var prev = FormationService.formationList[index-1];
       for(var i = 0; i < prev.positions.length; i++) {
         var pos = prev.positions[i];
         var posInfo = FormationService.positionInfo[pos.posID];
-        instance.canvasState.markOrAddShapeWithPosition(pos, posInfo);
+        instance.sharedCanvas.markOrAddShapeWithPosition(pos, posInfo);
       }
     }
 
-    instance.canvasState.removeUnmarkedShapes();
-    instance.canvasState.valid = false;
-    instance.canvasState.draw({label : formation.label});
+    instance.sharedCanvas.removeUnmarkedShapes();
+    instance.sharedCanvas.valid = false;
+    instance.sharedCanvas.draw({label : formation.label});
 	};
 
   this.renderCanvas = function (count) {
     var index = FormationService.selectedIndex;
-    instance.canvasState.shapes = this.sharedCanvas.updateShapesWithCount(index, FormationService.formationList, count, instance.canvasState.shapes);
-    instance.canvasState.valid = false;
+    this.sharedCanvas.updateShapesWithCount(index, FormationService.formationList, count);
+    instance.sharedCanvas.valid = false;
   }
 });
 
@@ -42,48 +41,47 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   
 	$scope.initContent = function() {
     var canvas = document.getElementById('canvas');
-    CanvasService.sharedCanvas = new SharedCanvas(canvas.getContext('2d'), canvas.width, canvas.height)
-	  CanvasService.canvasState = new CanvasState(canvas, CanvasService.sharedCanvas);
+    CanvasService.sharedCanvas = new SharedCanvas(canvas.getContext('2d'), canvas.width, canvas.height, canvas)
     $rootScope.addFormation();
     ActionService.undoStack = []; //cant undo the initial action
 	};
 
 	$scope.mouseDown = function(event) {
     event.preventDefault();
-    var mouse = CanvasService.canvasState.getMouse(event);
+    var mouse = CanvasService.sharedCanvas.getMouse(event);
     var mx = mouse.x;
     var my = mouse.y;
 
     //check for shape collision
-    var shapes = CanvasService.canvasState.shapes;
+    var shapes = CanvasService.sharedCanvas.shapes;
     var l = shapes.length;
     for (var i = l-1; i >= 0; i--) {
       if (shapes[i].contains(mx, my)) {
         var mySel = shapes[i];
         // Keep track of where in the object we clicked
         // so we can move it smoothly (see mousemove)
-        CanvasService.canvasState.dragging = true;
-        CanvasService.canvasState.dragoffx = mx;
-        CanvasService.canvasState.dragoffy = my;
+        CanvasService.sharedCanvas.dragging = true;
+        CanvasService.sharedCanvas.dragoffx = mx;
+        CanvasService.sharedCanvas.dragoffy = my;
         if(event.shiftKey || event.metaKey) {
-          if (CanvasService.canvasState.selection.indexOf(mySel) == -1)
-            CanvasService.canvasState.selection.push(mySel);
+          if (CanvasService.sharedCanvas.selection.indexOf(mySel) == -1)
+            CanvasService.sharedCanvas.selection.push(mySel);
         } else {
-          CanvasService.canvasState.selection = [mySel,];
+          CanvasService.sharedCanvas.selection = [mySel,];
         }
-        CanvasService.canvasState.valid = false;
+        CanvasService.sharedCanvas.valid = false;
         return;
       }
     }
     // havent returned means we have failed to select anything.
     // If there was an object selected, we deselect it
-    if (CanvasService.canvasState.selection) {
-      CanvasService.canvasState.selection = [];
-      CanvasService.canvasState.valid = false; // Need to clear the old selection border
+    if (CanvasService.sharedCanvas.selection) {
+      CanvasService.sharedCanvas.selection = [];
+      CanvasService.sharedCanvas.valid = false; // Need to clear the old selection border
     }
 
     //check for axis click
-    var axes = CanvasService.canvasState.axes;
+    var axes = CanvasService.sharedCanvas.axes;
 
     for(dir in axes) {
       if(axes[dir].contains(mx, my)) {
@@ -93,35 +91,35 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 	};
 
   $scope.mouseMove = function(e) {
-    if (CanvasService.canvasState.dragging){
-      var mouse = CanvasService.canvasState.getMouse(e);
+    if (CanvasService.sharedCanvas.dragging){
+      var mouse = CanvasService.sharedCanvas.getMouse(e);
       // We don't want to drag the object by its top-left corner, we want to drag it
       // from where we clicked. Thats why we saved the offset and use it here
-      var deltaX = mouse.x - CanvasService.canvasState.dragoffx;
-      var deltaY = mouse.y - CanvasService.canvasState.dragoffy;
-      for(var k=0; k < CanvasService.canvasState.selection.length; k++) {
-        selection = CanvasService.canvasState.selection[k];
-        selection.x = Math.min(Math.max(selection.x + deltaX, 0), CanvasService.canvasState.width);
-        selection.y = Math.min(Math.max(selection.y + deltaY, 0), CanvasService.canvasState.height);
+      var deltaX = mouse.x - CanvasService.sharedCanvas.dragoffx;
+      var deltaY = mouse.y - CanvasService.sharedCanvas.dragoffy;
+      for(var k=0; k < CanvasService.sharedCanvas.selection.length; k++) {
+        selection = CanvasService.sharedCanvas.selection[k];
+        selection.x = Math.min(Math.max(selection.x + deltaX, 0), CanvasService.sharedCanvas.width);
+        selection.y = Math.min(Math.max(selection.y + deltaY, 0), CanvasService.sharedCanvas.height);
       }
-      CanvasService.canvasState.dragoffx = mouse.x;
-      CanvasService.canvasState.dragoffy = mouse.y;
+      CanvasService.sharedCanvas.dragoffx = mouse.x;
+      CanvasService.sharedCanvas.dragoffy = mouse.y;
 
-      CanvasService.canvasState.valid = false; // Something's dragging so we must redraw
+      CanvasService.sharedCanvas.valid = false; // Something's dragging so we must redraw
     }
   };
 
 
   $scope.mouseUp = function(e) {
-    CanvasService.canvasState.dragging = false;
-    if(CanvasService.canvasState.selection.length > 0) {
+    CanvasService.sharedCanvas.dragging = false;
+    if(CanvasService.sharedCanvas.selection.length > 0) {
       if (FormationService.getSelectedFormation().type=='formation'){
         var form = FormationService.getSelectedFormation();
         //revamped snap to grid
-        var gridPositions = { x : CanvasService.canvasState.axes["x"].getPositions(), y :  CanvasService.canvasState.axes["y"].getPositions() };
+        var gridPositions = { x : CanvasService.sharedCanvas.axes["x"].getPositions(), y :  CanvasService.sharedCanvas.axes["y"].getPositions() };
         if((gridPositions["x"].length != 0 || gridPositions["y"].length != 0) && form.type == 'formation') {
-          for(var k=0; k < CanvasService.canvasState.selection.length; k++) {
-            selection = CanvasService.canvasState.selection[k];
+          for(var k=0; k < CanvasService.sharedCanvas.selection.length; k++) {
+            selection = CanvasService.sharedCanvas.selection[k];
             var snapX = selection.x, snapY = selection.y;
             for(var i = 0; i < gridPositions["x"].length; i++) {
               if(Math.abs(snapX - gridPositions["x"][i]) < 15) {
@@ -137,10 +135,10 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
             selection.y = snapY;
           }
         }
-        ActionService.addAction(new Action('moveSelection', {"selection":JSON.parse(JSON.stringify(CanvasService.canvasState.selection))}));
+        ActionService.addAction(new Action('moveSelection', {"selection":JSON.parse(JSON.stringify(CanvasService.sharedCanvas.selection))}));
       } else {
         alert("Cannot modify positions in a transition, create a new formation");
-        CanvasService.canvasState.valid = false; 
+        CanvasService.sharedCanvas.valid = false; 
         $scope.updateCanvasFrame();
       }
     }
@@ -154,7 +152,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       shouldAdd = true;
     }
     if(shouldAdd) {
-     var mouse = CanvasService.canvasState.getMouse(e);
+     var mouse = CanvasService.sharedCanvas.getMouse(e);
      ActionService.addAction(new Action('addPosition',{"mouse":mouse}));
      $scope.closeDropdown();
     }
@@ -210,9 +208,9 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     }
     if (Math.ceil($scope.count) != $scope.lastCount) {
       $scope.lastCount = Math.max(1,Math.ceil($scope.count));
-      CanvasService.canvasState.valid = false;
+      CanvasService.sharedCanvas.valid = false;
     }
-    CanvasService.canvasState.draw({ count : $scope.lastCount, name : FormationService.getSelectedFormation().name });
+    CanvasService.sharedCanvas.draw({ count : $scope.lastCount, name : FormationService.getSelectedFormation().name });
 
   };
 
@@ -229,10 +227,10 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
   };
 
   $scope.getDropdownTarget = function(event) {
-      var shapes = CanvasService.canvasState.shapes;
+      var shapes = CanvasService.sharedCanvas.shapes;
       var l = shapes.length;
       for (var i = l-1; i >= 0; i--) {
-        var mouse = CanvasService.canvasState.getMouse(event);
+        var mouse = CanvasService.sharedCanvas.getMouse(event);
         var mx = mouse.x;
         var my = mouse.y;   
         if (shapes[i].contains(mx, my)) {

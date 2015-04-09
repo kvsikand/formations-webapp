@@ -36,7 +36,7 @@ app.controller('PositionsPanelController', function($scope, $rootScope, CanvasSe
 
     $scope.addExistingPosition = function(index, event) {
     	var posInfo = FormationService.positionInfo[index];
-	    var mouse = event == null ? { x : 600/2, y : 280/2  } : CanvasService.canvasState.getMouse(event);
+	    var mouse = event == null ? { x : 600/2, y : 280/2  } : CanvasService.sharedCanvas.getMouse(event);
 	    if(positionIndexForID(FormationService.getSelectedFormation(), posInfo.posID) == -1) {
 	      if(FormationService.getSelectedFormation().type=='formation') {
 	        ActionService.addAction(new Action('addExistingPosition',{"mouse":mouse, "posInfo":posInfo}));

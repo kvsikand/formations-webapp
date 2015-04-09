@@ -3,13 +3,13 @@ var Action = function(type, args) {
 	this.execute = function(CanvasService, FormationService) {
 		if(type == 'addExistingPosition') {
 			console.log("adding pos: ", args.posInfo, args.posInfo.posID);
-			CanvasService.canvasState.addShape(new Position(args.mouse.x, args.mouse.y, args.posInfo.posID, args.posInfo.color, args.posInfo.label));
+			CanvasService.sharedCanvas.addShape(new Position(args.mouse.x, args.mouse.y, args.posInfo.posID, args.posInfo.color, args.posInfo.label));
         	FormationService.getSelectedFormation().positions.push(FormationService.getPositionWithID(args.mouse,args.posInfo.posID));
 		} else if(type == 'addPosition') {
 			var pos = FormationService.createPosition(args.mouse);
 			args.posID = pos.posID;
 			var posInfo = FormationService.positionInfo[pos.posID];
-			CanvasService.canvasState.addShape(new Position(pos.x, pos.y, pos.posID, posInfo.color, posInfo.label));
+			CanvasService.sharedCanvas.addShape(new Position(pos.x, pos.y, pos.posID, posInfo.color, posInfo.label));
 			FormationService.getSelectedFormation().positions.push(pos);
 		} else if(type == 'removePosition') {
     	  args.idx = positionIndexForID(FormationService.getSelectedFormation(), args.target);
@@ -53,14 +53,14 @@ var Action = function(type, args) {
 	//assume the state of the services is EXACTLy correct
 	this.undo = function(CanvasService, FormationService) {
 		if(type == 'addExistingPosition') {
-			CanvasService.canvasState.shapes.pop();
-			CanvasService.canvasState.valid = false;
+			CanvasService.sharedCanvas.shapes.pop();
+			CanvasService.sharedCanvas.valid = false;
 			FormationService.getSelectedFormation().positions.pop();
 		} else if(type == 'addPosition') {
 			delete FormationService.positionInfo[args.posID];
 			FormationService._positionCounter--;
-			CanvasService.canvasState.shapes.pop();
-			CanvasService.canvasState.valid = false;
+			CanvasService.sharedCanvas.shapes.pop();
+			CanvasService.sharedCanvas.valid = false;
 			FormationService.getSelectedFormation().positions.pop();
 		} else if(type == 'removePosition') {
     	  args.idx = positionIndexForID(FormationService.getSelectedFormation(), args.target);
