@@ -124,12 +124,12 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
             selection = CanvasService.canvasState.selection[k];
             var snapX = selection.x, snapY = selection.y;
             for(var i = 0; i < gridPositions["x"].length; i++) {
-              if(Math.abs(snapX - gridPositions["x"][i]) < 20) {
+              if(Math.abs(snapX - gridPositions["x"][i]) < 15) {
                 snapX = gridPositions["x"][i];
               }
             }
             for(var i = 0; i < gridPositions["y"].length; i++) {
-              if(Math.abs(snapY - gridPositions["y"][i]) < 20) {
+              if(Math.abs(snapY - gridPositions["y"][i]) < 15) {
                 snapY = gridPositions["y"][i];
               }
             }
@@ -218,11 +218,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 
   $scope.getBackgroundStyle = function() {
     if(FormationService.getSelectedFormation())
-      // if(FormationService.getSelectedFormation().type=='transition') {
-      //   return { background : '#717173' };
-      // } else {
         return { background : '#DEDFE2' };
-      // }
   };
 
   $scope.showDropdown = function (event) {

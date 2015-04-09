@@ -24,7 +24,7 @@ var Axis = function(direction, length) {
 	}
 
 	this.cycleNumPositions = function() {
-		this.setNumPositions(this.numIndex + 1 % POSITION_NUMS.length);
+		this.setNumPositions((this.numIndex + 1) % POSITION_NUMS.length);
 	}
 
 	this.setNumPositions = function(numIndex) {
