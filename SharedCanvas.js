@@ -7,6 +7,7 @@ var SharedCanvas = function(context, width, height, canvas) {
   this.height = height;
   this.valid = false; // when set to false, the canvas will redraw everything
   this.shapes = [];  // the collection of shapes to be drawn
+  this.selectionRect = undefined;
   this.dragging = false; // Keep track of when we are dragging
   this.selection = [];
   this.dragoffx = 0; // See mousedown and mousemove events for explanation
@@ -73,6 +74,13 @@ var SharedCanvas = function(context, width, height, canvas) {
             this.ctx.closePath();
         }
         this.ctx.setLineDash([1, 0]);
+
+        if(this.selectionRect) {
+          this.ctx.fillStyle="rgba(0, 50, 180, 0.3)";
+          this.ctx.strokeStyle="rgba(0, 50, 255, 0.9)";
+          this.ctx.fillRect(Math.min(this.selectionRect.x, this.selectionRect.x2), Math.min(this.selectionRect.y,this.selectionRect.y2), Math.abs(this.selectionRect.x-this.selectionRect.x2),Math.abs(this.selectionRect.y-this.selectionRect.y2));
+          this.ctx.fillRect(Math.min(this.selectionRect.x, this.selectionRect.x2), Math.min(this.selectionRect.y,this.selectionRect.y2), Math.abs(this.selectionRect.x-this.selectionRect.x2),Math.abs(this.selectionRect.y-this.selectionRect.y2));
+        }
         this.valid = true;
       }
   }	 
@@ -146,6 +154,32 @@ var SharedCanvas = function(context, width, height, canvas) {
     }
   }
 
+  this.addSelectionRect = function(mx, my) {
+    this.selectionRect = {"x" : mx, "y" : my, "x2" : mx, "y2": my};
+  }
+
+  this.updateSelectionRect = function(mx, my) {
+    this.selectionRect.x2 = mx;
+    this.selectionRect.y2 = my;
+    this.valid = false;
+  }
+
+  this.selectFromRect = function () {
+    if(this.selectionRect) {
+      var minX = Math.min(this.selectionRect.x,this.selectionRect.x2);
+      var minY = Math.min(this.selectionRect.y,this.selectionRect.y2);
+      var maxX = Math.max(this.selectionRect.x,this.selectionRect.x2)
+      var maxY = Math.max(this.selectionRect.y,this.selectionRect.y2)
+      for(var i = 0; i < this.shapes.length; i++) {
+        var shape = this.shapes[i];
+        if(minX < shape.x && shape.x < maxX && minY < shape.y && shape.y < maxY) {
+          this.selection.push(shape);
+        }
+      }
+    }
+    this.selectionRect = undefined;
+    this.valid = false;
+  }
 
   var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
 

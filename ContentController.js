@@ -66,7 +66,7 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
         if(event.shiftKey || event.metaKey) {
           if (CanvasService.sharedCanvas.selection.indexOf(mySel) == -1)
             CanvasService.sharedCanvas.selection.push(mySel);
-        } else {
+        } else if(CanvasService.sharedCanvas.selection.indexOf(mySel) == -1) {
           CanvasService.sharedCanvas.selection = [mySel,];
         }
         CanvasService.sharedCanvas.valid = false;
@@ -78,7 +78,9 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
     if (CanvasService.sharedCanvas.selection) {
       CanvasService.sharedCanvas.selection = [];
       CanvasService.sharedCanvas.valid = false; // Need to clear the old selection border
+      CanvasService.sharedCanvas.addSelectionRect(mx, my);
     }
+
 
     //check for axis click
     var axes = CanvasService.sharedCanvas.axes;
@@ -91,8 +93,8 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
 	};
 
   $scope.mouseMove = function(e) {
+    var mouse = CanvasService.sharedCanvas.getMouse(e);
     if (CanvasService.sharedCanvas.dragging){
-      var mouse = CanvasService.sharedCanvas.getMouse(e);
       // We don't want to drag the object by its top-left corner, we want to drag it
       // from where we clicked. Thats why we saved the offset and use it here
       var deltaX = mouse.x - CanvasService.sharedCanvas.dragoffx;
@@ -106,6 +108,8 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
       CanvasService.sharedCanvas.dragoffy = mouse.y;
 
       CanvasService.sharedCanvas.valid = false; // Something's dragging so we must redraw
+    } else if(CanvasService.sharedCanvas.selectionRect) {
+      CanvasService.sharedCanvas.updateSelectionRect(mouse.x, mouse.y);
     }
   };
 
@@ -141,6 +145,8 @@ app.controller('ContentController',function($scope, $rootScope, $interval, Canva
         CanvasService.sharedCanvas.valid = false; 
         $scope.updateCanvasFrame();
       }
+    } else if(CanvasService.sharedCanvas.selectionRect) {
+      CanvasService.sharedCanvas.selectFromRect();
     }
   };
 
